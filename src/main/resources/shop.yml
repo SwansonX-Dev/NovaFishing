@@ -1,0 +1,81 @@
+# =====================================================================
+#  Nova Token Shop
+# =====================================================================
+# Categories appear as icons in the main shop GUI.
+# Use /novatoken editshop in-game to add/remove items visually.
+# =====================================================================
+
+categories:
+  rods:
+    display-name: "<gold>Fishing Rods"
+    icon: FISHING_ROD
+    slot: 11
+    items:
+      - id: iron_rod
+        type: ROD
+        rod: iron
+        cost: 500
+        display:
+          name: "<white>Iron Rod"
+          lore:
+            - "<gray>Lava-ready beginner rod."
+      - id: gold_rod
+        type: ROD
+        rod: gold
+        cost: 2500
+        display:
+          name: "<yellow>Golden Rod"
+          lore:
+            - "<gray>Better luck, faster grind."
+      - id: diamond_rod
+        type: ROD
+        rod: diamond
+        cost: 10000
+        display:
+          name: "<aqua>Diamond Rod"
+          lore:
+            - "<gray>Endgame-tier catches."
+
+  consumables:
+    display-name: "<green>Consumables"
+    icon: EXPERIENCE_BOTTLE
+    slot: 13
+    items:
+      - id: xp_boost
+        type: COMMAND
+        cost: 100
+        commands:
+          - "give <player> potion[potion_contents={custom_effects:[{id:\"minecraft:luck\",amplifier:1,duration:12000,show_particles:true,show_icon:true}]}] 1"
+        display:
+          material: POTION
+          name: "<gold>Luck Potion"
+          lore:
+            - "<gray>A drinkable potion — drink it to activate."
+            - "<gray>Grants <yellow>Luck II</yellow> for <yellow>10 minutes</yellow>."
+            - "<gray>Improves rare catch tier chances!"
+
+  cosmetics:
+    display-name: "<light_purple>Cosmetics"
+    icon: NETHER_STAR
+    slot: 15
+    items:
+      - id: fancy_hat
+        type: ITEM
+        material: PINK_GLAZED_TERRACOTTA
+        cost: 1500
+        display:
+          name: "<light_purple>Pink Party Hat"
+          lore:
+            - "<gray>Wear it on your head!"
+
+# UI cosmetics
+ui:
+  title: "<dark_gray>Nova Token Shop"
+  rows: 3
+  filler:
+    material: BLACK_STAINED_GLASS_PANE
+    name: " "
+
+# Emerald store button (bottom-right of the token shop GUI).
+# Change in-game with: /novatoken setstorelink <url>
+store-link: "https://novamc.me"

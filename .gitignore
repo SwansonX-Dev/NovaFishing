@@ -1,0 +1,12 @@
+target/
+.tools/
+*.class
+
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+dependency-reduced-pom.xml

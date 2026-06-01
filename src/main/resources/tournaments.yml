@@ -1,0 +1,41 @@
+# =====================================================================
+#  Tournament configuration
+# =====================================================================
+# Tournaments are ephemeral (in-memory scores only).
+# Use /novafishing tournament start <minutes> [type] to launch one.
+#
+# Types:
+#   ANY_CATCH     - 1 point per catch
+#   TIER_WEIGHTED - JUNK=0, COMMON=1, UNCOMMON=2, RARE=5, EPIC=10, LEGENDARY=25, MYTHIC=100
+#
+# Announcement interval is shared.
+# =====================================================================
+
+settings:
+  default-type: TIER_WEIGHTED
+  announce-interval-seconds: 300    # standings update every 5 min
+  show-top-n: 3
+  # Sounds broadcast to every online player. Any Bukkit Sound enum name works.
+  # Try ENTITY_ENDER_DRAGON_GROWL or BLOCK_NOTE_BLOCK_PLING if you want different vibes.
+  start-sound: UI_TOAST_CHALLENGE_COMPLETE
+  end-sound:   ENTITY_PLAYER_LEVELUP
+
+# Auto-scheduled tournaments. Times are server local time, 24h HH:mm.
+# A scheduled start is skipped if another tournament is already running.
+schedule:
+  enabled: true
+  times:
+    - "00:00"
+    - "06:00"
+    - "12:00"
+    - "19:00"
+  duration-minutes: 30
+  type: TIER_WEIGHTED
+
+prizes:
+  first:
+    - "novatoken give <player> 20"
+  second:
+    - "novatoken give <player> 15"
+  third:
+    - "novatoken give <player> 10"

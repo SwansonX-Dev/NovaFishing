@@ -1,0 +1,71 @@
+# =====================================================================
+#  Daily & weekly challenges
+# =====================================================================
+# Challenges auto-reset at the configured rollover:
+#   daily  : every UTC midnight
+#   weekly : every Monday UTC midnight
+#
+# Goal types:
+#   CATCH_ANY     - any catch
+#   CATCH_TIER    - catch X items of a specific tier (set 'tier:')
+#   PRESTIGE_ANY  - prestige any rod
+#
+# Reward types:
+#   TOKEN   - Nova Tokens
+#   COMMAND - server-run command(s)
+# =====================================================================
+
+challenges:
+  daily_grinder:
+    type: daily
+    goal: CATCH_ANY
+    target: 50
+    display-name: "<green>Daily Grinder"
+    description: "<gray>Catch 50 anything today."
+    reward:
+      type: TOKEN
+      amount: 100
+
+  daily_uncommon:
+    type: daily
+    goal: CATCH_TIER
+    tier: UNCOMMON
+    target: 10
+    display-name: "<aqua>Daily Diver"
+    description: "<gray>Catch 10 Uncommon-tier items today."
+    reward:
+      type: TOKEN
+      amount: 200
+
+  weekly_legend:
+    type: weekly
+    goal: CATCH_TIER
+    tier: LEGENDARY
+    target: 3
+    display-name: "<gold>Weekly Legend"
+    description: "<gray>Catch 3 Legendary-tier items this week."
+    reward:
+      type: TOKEN
+      amount: 1000
+
+  weekly_mythic:
+    type: weekly
+    goal: CATCH_TIER
+    tier: MYTHIC
+    target: 1
+    display-name: "<gradient:#FFD700:#FF3300>Weekly Mythic</gradient>"
+    description: "<gray>Catch a Mythic-tier item this week."
+    reward:
+      type: COMMAND
+      commands:
+        - "novatoken give <player> 2500"
+
+  weekly_prestige:
+    type: weekly
+    goal: PRESTIGE_ANY
+    target: 1
+    display-name: "<light_purple>Weekly Prestige"
+    description: "<gray>Prestige any rod this week."
+    reward:
+      type: TOKEN
+      amount: 750

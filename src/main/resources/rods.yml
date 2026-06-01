@@ -1,0 +1,433 @@
+# =====================================================================
+#  Rod definitions
+# =====================================================================
+# A rod is a tier of fishing pole. Each rod has its OWN level curve.
+# Players grind XP per-rod; abilities unlock at specific levels.
+# Max levels are intentionally high so this is a WEEKS-long grind.
+#
+# Level XP formula (per rod):
+#   xp(level) = base * level^exponent
+#
+# Catch weight multipliers map: higher = better odds on rarer rewards.
+# =====================================================================
+
+rods:
+  # ------------- Starter rod, water only, modest XP ----------------
+  wooden:
+    display-name: "<gray>Wooden Rod"
+    material: FISHING_ROD
+    custom-model-data: 1001
+    max-level: 25
+    base-xp: 25
+    xp-exponent: 1.55
+    # Vanilla Minecraft XP granted per successful cast (omit or 0 for none).
+    vanilla-xp-per-cast: 1
+    upgrade-to: iron
+    upgrade-cost: 100
+    skins:
+      driftwood:
+        display-name: "<gray>Driftwood Rod"
+        custom-model-data: 1010
+      bamboo:
+        display-name: "<green>Bamboo Rod"
+        custom-model-data: 1011
+      new_years:
+        display-name: "<gradient:#FF55FF:#FFFF55><bold>New Year's Wooden Rod</bold></gradient>"
+        custom-model-data: 1100
+        permission: novafishing.skin.newyears
+        event: new_years
+      halloween:
+        display-name: "<gradient:#FF8800:#000000><bold>Spooky Wooden Rod</bold></gradient>"
+        custom-model-data: 1110
+        permission: novafishing.skin.halloween
+        event: halloween
+      christmas:
+        display-name: "<gradient:#FF0000:#00FF00><bold>Festive Wooden Rod</bold></gradient>"
+        custom-model-data: 1120
+        permission: novafishing.skin.christmas
+        event: christmas
+      valentines:
+        display-name: "<gradient:#FF55FF:#FF99AA><bold>Lovers' Wooden Rod</bold></gradient>"
+        custom-model-data: 1130
+        permission: novafishing.skin.valentines
+        event: valentines
+    lore:
+      - "<dark_gray>A humble beginning."
+      - ""
+      - "<gray>Level: <white><level>/<max_level>"
+      - "<gray>XP: <aqua><xp>/<xp_required>"
+      - ""
+      - "<gray>Abilities:"
+      - "<abilities>"
+    catch-tier-weights:
+      JUNK: 60
+      COMMON: 35
+      UNCOMMON: 5
+      RARE: 0
+      EPIC: 0
+      LEGENDARY: 0
+      MYTHIC: 0
+    abilities:
+      MAGNET: 5
+      DOUBLE_CATCH: 15
+      XP_BOOST_I: 20
+
+  # ------------- Iron rod, allows lava fishing ----------------
+  iron:
+    display-name: "<white>Iron Rod"
+    material: FISHING_ROD
+    custom-model-data: 1002
+    max-level: 50
+    base-xp: 60
+    xp-exponent: 1.6
+    upgrade-to: gold
+    upgrade-cost: 1000
+    skins:
+      copper:
+        display-name: "<gold>Copper Rod"
+        custom-model-data: 1020
+      runic:
+        display-name: "<dark_aqua>Runic Iron Rod"
+        custom-model-data: 1021
+      new_years:
+        display-name: "<gradient:#FF55FF:#FFFF55><bold>New Year's Iron Rod</bold></gradient>"
+        custom-model-data: 1101
+        permission: novafishing.skin.newyears
+        event: new_years
+      halloween:
+        display-name: "<gradient:#FF8800:#000000><bold>Spooky Iron Rod</bold></gradient>"
+        custom-model-data: 1111
+        permission: novafishing.skin.halloween
+        event: halloween
+      christmas:
+        display-name: "<gradient:#FF0000:#00FF00><bold>Festive Iron Rod</bold></gradient>"
+        custom-model-data: 1121
+        permission: novafishing.skin.christmas
+        event: christmas
+      valentines:
+        display-name: "<gradient:#FF55FF:#FF99AA><bold>Lovers' Iron Rod</bold></gradient>"
+        custom-model-data: 1131
+        permission: novafishing.skin.valentines
+        event: valentines
+    lore:
+      - "<gray>Reinforced for hot waters."
+      - ""
+      - "<gray>Level: <white><level>/<max_level>"
+      - "<gray>XP: <aqua><xp>/<xp_required>"
+      - ""
+      - "<gray>Abilities:"
+      - "<abilities>"
+    catch-tier-weights:
+      JUNK: 30
+      COMMON: 45
+      UNCOMMON: 18
+      RARE: 6
+      EPIC: 1
+      LEGENDARY: 0
+      MYTHIC: 0
+    abilities:
+      LAVA_RESISTANT: 1
+      MAGNET: 5
+      DOUBLE_CATCH: 10
+      AUTO_REEL: 20
+      XP_BOOST_I: 25
+      TREASURE_HUNTER_I: 35
+
+  # ------------- Gold rod, balanced grinder ----------------
+  gold:
+    display-name: "<yellow>Golden Rod"
+    material: FISHING_ROD
+    custom-model-data: 1003
+    max-level: 75
+    base-xp: 150
+    xp-exponent: 1.65
+    upgrade-to: diamond
+    upgrade-cost: 5000
+    skins:
+      electrum:
+        display-name: "<white>Electrum Rod"
+        custom-model-data: 1030
+      rose_gold:
+        display-name: "<light_purple>Rose Gold Rod"
+        custom-model-data: 1031
+      new_years:
+        display-name: "<gradient:#FF55FF:#FFFF55><bold>New Year's Golden Rod</bold></gradient>"
+        custom-model-data: 1102
+        permission: novafishing.skin.newyears
+        event: new_years
+      halloween:
+        display-name: "<gradient:#FF8800:#000000><bold>Spooky Golden Rod</bold></gradient>"
+        custom-model-data: 1112
+        permission: novafishing.skin.halloween
+        event: halloween
+      christmas:
+        display-name: "<gradient:#FF0000:#00FF00><bold>Festive Golden Rod</bold></gradient>"
+        custom-model-data: 1122
+        permission: novafishing.skin.christmas
+        event: christmas
+      valentines:
+        display-name: "<gradient:#FF55FF:#FF99AA><bold>Lovers' Golden Rod</bold></gradient>"
+        custom-model-data: 1132
+        permission: novafishing.skin.valentines
+        event: valentines
+    lore:
+      - "<yellow>Fortune favors the patient angler."
+      - ""
+      - "<gray>Level: <white><level>/<max_level>"
+      - "<gray>XP: <aqua><xp>/<xp_required>"
+      - ""
+      - "<gray>Abilities:"
+      - "<abilities>"
+    catch-tier-weights:
+      JUNK: 15
+      COMMON: 40
+      UNCOMMON: 25
+      RARE: 14
+      EPIC: 5
+      LEGENDARY: 1
+      MYTHIC: 0
+    abilities:
+      LAVA_RESISTANT: 1
+      MAGNET: 5
+      DOUBLE_CATCH: 10
+      AUTO_REEL: 15
+      XP_BOOST_II: 25
+      TREASURE_HUNTER_II: 35
+      LUCKY_HOOK: 45
+      VOID_WALKER: 60
+
+  # ------------- Diamond rod, end-game grinder ----------------
+  diamond:
+    display-name: "<aqua>Diamond Rod"
+    material: FISHING_ROD
+    custom-model-data: 1004
+    max-level: 100
+    base-xp: 375
+    xp-exponent: 1.7
+    upgrade-to: phoenix
+    upgrade-cost: 25000
+    skins:
+      crystal:
+        display-name: "<white>Crystal Rod"
+        custom-model-data: 1040
+      abyssal:
+        display-name: "<dark_purple>Abyssal Rod"
+        custom-model-data: 1041
+      new_years:
+        display-name: "<gradient:#FF55FF:#FFFF55><bold>New Year's Diamond Rod</bold></gradient>"
+        custom-model-data: 1103
+        permission: novafishing.skin.newyears
+        event: new_years
+      halloween:
+        display-name: "<gradient:#FF8800:#000000><bold>Spooky Diamond Rod</bold></gradient>"
+        custom-model-data: 1113
+        permission: novafishing.skin.halloween
+        event: halloween
+      christmas:
+        display-name: "<gradient:#FF0000:#00FF00><bold>Festive Diamond Rod</bold></gradient>"
+        custom-model-data: 1123
+        permission: novafishing.skin.christmas
+        event: christmas
+      valentines:
+        display-name: "<gradient:#FF55FF:#FF99AA><bold>Lovers' Diamond Rod</bold></gradient>"
+        custom-model-data: 1133
+        permission: novafishing.skin.valentines
+        event: valentines
+    lore:
+      - "<aqua>Crystal-edged precision."
+      - ""
+      - "<gray>Level: <white><level>/<max_level>"
+      - "<gray>XP: <aqua><xp>/<xp_required>"
+      - ""
+      - "<gray>Abilities:"
+      - "<abilities>"
+    catch-tier-weights:
+      JUNK: 5
+      COMMON: 30
+      UNCOMMON: 30
+      RARE: 20
+      EPIC: 10
+      LEGENDARY: 4
+      MYTHIC: 1
+    abilities:
+      LAVA_RESISTANT: 1
+      MAGNET: 5
+      DOUBLE_CATCH: 10
+      AUTO_SMELT: 12
+      AUTO_REEL: 15
+      XP_BOOST_II: 20
+      TREASURE_HUNTER_II: 30
+      LUCKY_HOOK: 40
+      WEALTH_MAGNET: 50
+      VOID_WALKER: 55
+      TRIPLE_CATCH: 70
+      EXPERIENCE_AMP: 80
+      PHOENIX_REEL: 85
+
+  # ------------- Phoenix rod, mythic-tier end-game ----------------
+  phoenix:
+    display-name: "<gradient:#FF3300:#FFAA00><bold>Phoenix Rod</bold></gradient>"
+    material: FISHING_ROD
+    custom-model-data: 1005
+    permission: novafishing.rod.phoenix
+    max-level: 150
+    base-xp: 900
+    xp-exponent: 1.78
+    max-prestige: 25
+    prestige-xp-bonus-per-star: 0.20
+    particles:
+      waiting-lava: FLAME
+      bite-lava: LAVA
+      catch-burst: FIREWORK
+    skins:
+      classic:
+        display-name: "<gradient:#FF3300:#FFAA00><bold>Phoenix Rod</bold></gradient>"
+        custom-model-data: 1005
+      ember:
+        display-name: "<gradient:#FF1100:#FF5500><bold>Ember Phoenix</bold></gradient>"
+        custom-model-data: 1051
+        permission: novafishing.skin.ember
+      celestial:
+        display-name: "<gradient:#FFD700:#FFFFFF><bold>Celestial Phoenix</bold></gradient>"
+        custom-model-data: 1052
+        permission: novafishing.skin.celestial
+      new_years:
+        display-name: "<gradient:#FF55FF:#FFFF55><bold>New Year's Phoenix Rod</bold></gradient>"
+        custom-model-data: 1104
+        permission: novafishing.skin.newyears
+        event: new_years
+      halloween:
+        display-name: "<gradient:#FF8800:#000000><bold>Spectral Phoenix</bold></gradient>"
+        custom-model-data: 1114
+        permission: novafishing.skin.halloween
+        event: halloween
+      christmas:
+        display-name: "<gradient:#FF0000:#00FF00><bold>Yuletide Phoenix</bold></gradient>"
+        custom-model-data: 1124
+        permission: novafishing.skin.christmas
+        event: christmas
+      valentines:
+        display-name: "<gradient:#FF55FF:#FF99AA><bold>Cupid's Phoenix</bold></gradient>"
+        custom-model-data: 1134
+        permission: novafishing.skin.valentines
+        event: valentines
+    lore:
+      - "<gold>Forged in the void, fueled by fire."
+      - ""
+      - "<gray>Level: <white><level>/<max_level>"
+      - "<gray>XP: <aqua><xp>/<xp_required>"
+      - ""
+      - "<gray>Abilities:"
+      - "<abilities>"
+    catch-tier-weights:
+      JUNK: 1
+      COMMON: 15
+      UNCOMMON: 25
+      RARE: 25
+      EPIC: 20
+      LEGENDARY: 10
+      MYTHIC: 4
+    abilities:
+      LAVA_RESISTANT: 1
+      MAGNET: 1
+      DOUBLE_CATCH: 5
+      AUTO_REEL: 10
+      AUTO_SMELT: 15
+      XP_BOOST_III: 20
+      TREASURE_HUNTER_III: 30
+      WEALTH_MAGNET: 35
+      LUCKY_HOOK: 40
+      VOID_WALKER: 50
+      EXPERIENCE_AMP: 55
+      TRIPLE_CATCH: 65
+      LIGHTNING_ROD: 75
+      PHOENIX_REEL: 80
+      MYTHIC_FORTUNE: 100
+      ETERNAL_FLAME: 125
+      ASCENDED: 150
+
+# =====================================================================
+#  Ability descriptions (used in GUIs)
+# =====================================================================
+abilities:
+  LAVA_RESISTANT:
+    name: "<red>Lava Resistant"
+    description: "<gray>Rod doesn't burn up in lava."
+  MAGNET:
+    name: "<aqua>Magnet"
+    description: "<gray>Catches travel directly to your inventory."
+  DOUBLE_CATCH:
+    name: "<green>Double Catch"
+    description: "<gray>10% chance to reel in two items."
+    chance: 0.10
+  TRIPLE_CATCH:
+    name: "<gold>Triple Catch"
+    description: "<gray>5% chance for THREE items."
+    chance: 0.05
+  AUTO_REEL:
+    name: "<yellow>Auto-Reel"
+    description: "<gray>Automatically reels when a fish bites."
+  XP_BOOST_I:
+    name: "<light_purple>XP Boost I"
+    description: "<gray>+25% rod XP."
+    multiplier: 1.25
+  XP_BOOST_II:
+    name: "<light_purple>XP Boost II"
+    description: "<gray>+50% rod XP."
+    multiplier: 1.50
+  XP_BOOST_III:
+    name: "<light_purple>XP Boost III"
+    description: "<gray>+100% rod XP."
+    multiplier: 2.00
+  TREASURE_HUNTER_I:
+    name: "<gold>Treasure Hunter I"
+    description: "<gray>+5% chance to upgrade catch tier."
+    chance: 0.05
+  TREASURE_HUNTER_II:
+    name: "<gold>Treasure Hunter II"
+    description: "<gray>+10% chance to upgrade catch tier."
+    chance: 0.10
+  TREASURE_HUNTER_III:
+    name: "<gold>Treasure Hunter III"
+    description: "<gray>+20% chance to upgrade catch tier."
+    chance: 0.20
+  LUCKY_HOOK:
+    name: "<green>Lucky Hook"
+    description: "<gray>Halves bite wait time."
+    multiplier: 0.5
+  VOID_WALKER:
+    name: "<dark_purple>Void Walker"
+    description: "<gray>You can fish in configured void regions."
+  PHOENIX_REEL:
+    name: "<red>Phoenix Reel"
+    description: "<gray>Catches in lava set the item on fire (+25% value)."
+    multiplier: 1.25
+  MYTHIC_FORTUNE:
+    name: "<gradient:#FFD700:#FF3300>Mythic Fortune</gradient>"
+    description: "<gray>Doubles Mythic tier weight."
+    multiplier: 2.0
+  ETERNAL_FLAME:
+    name: "<gradient:#FF3300:#FFAA00>Eternal Flame</gradient>"
+    description: "<gray>All XP gain doubled."
+    multiplier: 2.0
+  ASCENDED:
+    name: "<gradient:#FFFFFF:#FFD700><bold>Ascended</bold></gradient>"
+    description: "<gray>25% chance to upgrade a catch one tier (stacks with Treasure Hunter)."
+    chance: 0.25
+  WEALTH_MAGNET:
+    name: "<gold>Wealth Magnet"
+    description: "<gray>All Nova Token rewards are doubled."
+    multiplier: 2.0
+  EXPERIENCE_AMP:
+    name: "<aqua>Experience Amp"
+    description: "<gray>Catches drop 5-20 vanilla XP orbs."
+  LIGHTNING_ROD:
+    name: "<yellow>Lightning Rod"
+    description: "<gray>Mythic catches summon visual lightning."
+  AUTO_SMELT:
+    name: "<red>Auto-Smelt"
+    description: "<gray>Raw fish are delivered cooked."
+
+# =====================================================================
+#  Reload command: /novafishing reload
+# =====================================================================

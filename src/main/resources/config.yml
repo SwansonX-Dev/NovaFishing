@@ -1,0 +1,177 @@
+# =====================================================================
+#  NovaFishing - main config
+# =====================================================================
+
+settings:
+  allow-lava-anywhere: true
+  allow-water-fishing: true
+  # Set false to let any Nova rod fish in lava.  Default is true → progression
+  # is required (Iron rod or higher, which unlock Lava Resistant at level 1).
+  lava-requires-ability: true
+  # Skip CustomModelData on all rods + skins so Bedrock players keep the
+  # vanilla "Fish" touch button on mobile clients. Trade-off: every rod tier
+  # looks like a plain fishing rod in the hotbar (display name + lore still
+  # differentiate them). Flip to false if you want texture-pack skins back.
+  vanilla-rods: true
+  # Cast wait time before a fish bites, in seconds.
+  # Each cast picks a random value in [min, max]. Fractional values allowed.
+  cast-time-min-seconds: 3
+  cast-time-max-seconds: 13
+  catch-cooldown-ms: 750
+  xp-on-junk: true
+
+  broadcast:
+    max-level: true
+    rare-catch: true
+    rare-catch-min-tier: MYTHIC
+
+  effects:
+    casting-trail: true
+    bite-warning: true
+    catch-burst: true
+    sound-volume: 0.8
+
+  bossbar:
+    enabled: true
+
+  # =====================================================================
+  #  Word-check anti-AFK
+  # =====================================================================
+  # Every `interval-minutes`, every online player is shown a title prompting
+  # them to type a random ≤4-letter word in chat. Until they answer, fishing
+  # is blocked. Players with `novafishing.wordcheck.bypass` skip the prompt.
+  # Edit at runtime with `/novafishing wordcheck interval <minutes>`.
+  word-check:
+    enabled: true
+    interval-minutes: 15
+
+  # =====================================================================
+  #  Anti-autofish — server-side autoclicker / macro detection
+  # =====================================================================
+  # Four independent checks run on every catch. Any one tripping voids the
+  # catch and alerts staff with the `novafishing.alert.autofish` permission.
+  # Players with `novafishing.antiautofish.bypass` skip all checks.
+  anti-autofish:
+    enabled: true
+    staff-alert-cooldown-seconds: 30   # min seconds between alerts per player
+
+    # 1) Player's view must point within this cone of the hook at catch time.
+    #    Fixed autoclickers don't aim — this is the strongest single check.
+    look-cone:
+      enabled: true
+      max-degrees: 35.0
+
+    # 2) Stddev of recent cast intervals must EXCEED this floor. A timed macro
+    #    casts at near-constant intervals, producing near-zero stddev.
+    cast-jitter:
+      enabled: true
+      min-stddev-ms: 350.0
+
+    # 3) Stddev of bite→reel reaction times must STAY BELOW this ceiling. A
+    #    fixed-cadence macro reels at times uncorrelated with bite onset, so its
+    #    reactions spread uniformly across the 3s bite window (~870ms stddev).
+    #    Humans cluster around their reaction time (~100ms stddev).
+    reaction:
+      enabled: true
+      max-stddev-ms: 700.0
+
+    # 4) Yaw/pitch must have changed within this window. Mouse-jiggler macros
+    #    that nudge the cursor a pixel don't change in-game look angles.
+    activity:
+      enabled: true
+      max-idle-seconds: 45
+
+  # Discord webhook (paste your URL, leave empty to disable)
+  discord-webhook-url: ""
+
+# Void fishing regions (managed via /novafishing setpos1 & setpos2)
+void-regions: {}
+
+# =====================================================================
+#  Leaderboards
+# =====================================================================
+# Players listed here are hidden from the PAPI top_tokens / top_rod
+# leaderboards. Names are matched case-insensitively. Use this to keep
+# admins / staff off the public scoreboards. Manage in-game with
+# /novafishing lbexclude <list|add|remove|clear> [player]; changes are
+# real-time (next placeholder refresh shows the new list).
+leaderboard:
+  exclude-players: []
+  # Example:
+  # exclude-players:
+  #   - Notch
+  #   - StaffMember
+
+# =====================================================================
+#  Holograms
+# =====================================================================
+# Default template used when you run `/novafishing lbhologram create`.
+# Lines use MiniMessage tags (<aqua>, <bold>, <gradient:#a:#b>, ...) and may
+# contain any PlaceholderAPI placeholder. Per-viewer placeholders such as
+# %novafishing_rod_level% will render as empty here — the hologram is global,
+# so PAPI is resolved with no player. Use the top_* placeholders for content.
+#
+# After creation, every aspect (lines, position, refresh rate) can be edited
+# at runtime with `/novafishing holo <subcommand>`. Edits persist to
+# holograms.yml; this template is only consulted on initial creation.
+holograms:
+  leaderboard:
+    # Hologram id to create when running /novafishing lbhologram create
+    default-id: 'lb'
+    # Number of ranks to show (1-10; PAPI exposes top 10).
+    rows: 10
+    # Title line at the top.
+    title: '<aqua><bold>NOVA FISHING LEADERBOARD'
+    # Optional second line under the title. Leave empty ('') to omit.
+    subtitle: '<gray><italic>(top rod tier)'
+    # Row format. <rank>, <name>, <rod>, <level>, <tier> are substituted into
+    # PAPI placeholders that resolve to top player data:
+    #   <name>  → top player name
+    #   <rod>   → their highest rod's display name (e.g. "Iron")
+    #   <level> → their current level on that rod (e.g. 22)
+    #   <tier>  → 1-based tier index (wooden=1, iron=2, …)
+    row-format: '<white>#<rank> <white><name><dark_gray>: <gray><rod> <yellow><level>'
+    # Optional footer line. Leave empty ('') to omit.
+    footer: ''
+
+economy:
+  use-vault: true
+
+# =====================================================================
+#  Physical Nova Token (giveaway item)
+# =====================================================================
+# /novatoken physical <amount> [player] [stack] gives the target a
+# right-click-redeemable item carrying <amount> tokens per item. Stack
+# is the item count (1-64). Useful for giveaways, drop parties, and
+# physical reward chests. The amount is stored in PDC, so the value
+# survives renames and inventory moves but cannot be forged by players.
+physical-token:
+  material: SUNFLOWER
+  glow: true
+  name: "<gradient:#FFD700:#FFAA00><bold>Nova Token</bold></gradient> <gray>(<yellow><amount></yellow>)"
+  lore:
+    - "<gray>Worth <yellow><amount></yellow> Nova Tokens."
+    - ""
+    - "<gold>Right-click <gray>to redeem."
+
+starter-rod: 'wooden'
+
+database:
+  type: sqlite
+  file: 'data.db'
+
+# =====================================================================
+#  Holiday event toggles
+# =====================================================================
+# Flip a flag to true to unlock that event's skins + rewards (defined in
+# rods.yml and rewards.yml with `event: <name>`).  Reload with /novafishing
+# reload after changing.
+events:
+  new_years: false
+  valentines: false
+  st_patricks: false
+  easter: false
+  summer: false
+  halloween: false
+  thanksgiving: false
+  christmas: false

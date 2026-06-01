@@ -1,0 +1,530 @@
+﻿# =====================================================================
+#  Catch rewards
+# =====================================================================
+# Tiers (worst → best):
+#   JUNK, COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC
+#
+# Entry types:
+#   ITEM     - vanilla material with optional display data
+#   COMMAND  - server-run command(s); <player> = catcher's name
+#   MONEY    - Vault economy deposit
+#   TOKEN    - Nova Tokens deposit
+#   XP       - rod XP injection
+#
+# weight     - relative odds inside its tier (higher = more common)
+# min-amount/max-amount - random stack size for ITEM/MONEY/TOKEN/XP
+# permission - optional permission required to roll this entry
+#
+# Edit live in-game with /novafishing rewards.
+# =====================================================================
+
+# Max enchantment level applied to ITEM rewards. Levels in entries above
+# this value are clamped down. Vanilla caps display nicely up to 10;
+# Bukkit allows up to 32767 with unsafe enchants.
+max-enchant-level: 10
+
+tiers:
+
+  # ========================= JUNK ==========================
+  JUNK:
+    color: "<dark_gray>"
+    name: "Junk"
+    entries:
+      # Trash / debris
+      - { type: ITEM, material: ROTTEN_FLESH,  min-amount: 1, max-amount: 4, weight: 50 }
+      - { type: ITEM, material: STICK,         min-amount: 1, max-amount: 5, weight: 50 }
+      - { type: ITEM, material: BONE,          min-amount: 1, max-amount: 3, weight: 35 }
+      - { type: ITEM, material: STRING,        min-amount: 1, max-amount: 4, weight: 35 }
+      - { type: ITEM, material: SPIDER_EYE,    weight: 20 }
+      - { type: ITEM, material: FEATHER,       min-amount: 1, max-amount: 3, weight: 25 }
+      - { type: ITEM, material: LEATHER,       weight: 15 }
+      # Filler blocks
+      - { type: ITEM, material: DIRT,          min-amount: 4, max-amount: 16, weight: 40 }
+      - { type: ITEM, material: GRAVEL,        min-amount: 4, max-amount: 12, weight: 40 }
+      - { type: ITEM, material: SAND,          min-amount: 4, max-amount: 12, weight: 40 }
+      - { type: ITEM, material: COBBLESTONE,   min-amount: 8, max-amount: 32, weight: 40 }
+      - { type: ITEM, material: NETHERRACK,    min-amount: 8, max-amount: 32, weight: 30 }
+      - { type: ITEM, material: ANDESITE,      min-amount: 4, max-amount: 16, weight: 25 }
+      - { type: ITEM, material: DIORITE,       min-amount: 4, max-amount: 16, weight: 25 }
+      - { type: ITEM, material: GRANITE,       min-amount: 4, max-amount: 16, weight: 25 }
+      - { type: ITEM, material: SOUL_SAND,     min-amount: 2, max-amount: 6,  weight: 20 }
+      - { type: ITEM, material: SOUL_SOIL,     min-amount: 2, max-amount: 6,  weight: 20 }
+
+  # ========================= COMMON =========================
+  COMMON:
+    color: "<white>"
+    name: "Common"
+    entries:
+      # Fish & food
+      - { type: ITEM, material: COD,             min-amount: 1, max-amount: 3, weight: 60 }
+      - { type: ITEM, material: SALMON,          min-amount: 1, max-amount: 3, weight: 45 }
+      - { type: ITEM, material: TROPICAL_FISH,                                 weight: 10 }
+      - { type: ITEM, material: BREAD,           min-amount: 2, max-amount: 5, weight: 30 }
+      - { type: ITEM, material: WHEAT,           min-amount: 4, max-amount: 12, weight: 30 }
+      - { type: ITEM, material: CARROT,          min-amount: 2, max-amount: 6, weight: 25 }
+      - { type: ITEM, material: POTATO,          min-amount: 2, max-amount: 6, weight: 25 }
+      - { type: ITEM, material: APPLE,           min-amount: 1, max-amount: 3, weight: 25 }
+      # Currency / progression
+      - { type: TOKEN, min-amount: 1, max-amount: 50, weight: 140 }
+      - { type: XP,    min-amount: 10, max-amount: 50, weight: 35 }
+      # Basic resources
+      - { type: ITEM, material: COAL,            min-amount: 2, max-amount: 8,  weight: 40 }
+      - { type: ITEM, material: CHARCOAL,        min-amount: 2, max-amount: 6,  weight: 30 }
+      - { type: ITEM, material: IRON_NUGGET,     min-amount: 4, max-amount: 12, weight: 25 }
+      - { type: ITEM, material: GOLD_NUGGET,     min-amount: 2, max-amount: 8,  weight: 20 }
+      # Building blocks
+      - { type: ITEM, material: STONE,           min-amount: 8, max-amount: 32, weight: 35 }
+      - { type: ITEM, material: OAK_PLANKS,      min-amount: 8, max-amount: 32, weight: 30 }
+      - { type: ITEM, material: BIRCH_PLANKS,    min-amount: 8, max-amount: 32, weight: 25 }
+      - { type: ITEM, material: SPRUCE_PLANKS,   min-amount: 8, max-amount: 32, weight: 25 }
+      - { type: ITEM, material: JUNGLE_PLANKS,   min-amount: 8, max-amount: 32, weight: 20 }
+      - { type: ITEM, material: ACACIA_PLANKS,   min-amount: 8, max-amount: 32, weight: 20 }
+      - { type: ITEM, material: DARK_OAK_PLANKS, min-amount: 8, max-amount: 32, weight: 20 }
+      - { type: ITEM, material: CHERRY_PLANKS,   min-amount: 8, max-amount: 32, weight: 20 }
+      - { type: ITEM, material: MANGROVE_PLANKS, min-amount: 8, max-amount: 32, weight: 20 }
+      - { type: ITEM, material: BAMBOO_PLANKS,   min-amount: 8, max-amount: 32, weight: 20 }
+      - { type: ITEM, material: GLASS,           min-amount: 8, max-amount: 32, weight: 25 }
+      - { type: ITEM, material: BRICK,           min-amount: 4, max-amount: 16, weight: 20 }
+      - { type: ITEM, material: BRICKS,          min-amount: 4, max-amount: 16, weight: 20 }
+      - { type: ITEM, material: CLAY,            min-amount: 2, max-amount: 8,  weight: 20 }
+      - { type: ITEM, material: TERRACOTTA,      min-amount: 4, max-amount: 16, weight: 18 }
+      # Low gear (stone tier)
+      - { type: ITEM, material: WOODEN_PICKAXE,  weight: 15 }
+      - { type: ITEM, material: WOODEN_AXE,      weight: 15 }
+      - { type: ITEM, material: WOODEN_SWORD,    weight: 15 }
+      - { type: ITEM, material: STONE_PICKAXE,   weight: 20 }
+      - { type: ITEM, material: STONE_AXE,       weight: 20 }
+      - { type: ITEM, material: STONE_SWORD,     weight: 20 }
+      - { type: ITEM, material: STONE_SHOVEL,    weight: 15 }
+      - { type: ITEM, material: STONE_HOE,       weight: 10 }
+      - { type: ITEM, material: BOW,             weight: 18 }
+      - { type: ITEM, material: ARROW,           min-amount: 8, max-amount: 32, weight: 25 }
+      # Leather armor
+      - { type: ITEM, material: LEATHER_HELMET,     weight: 15 }
+      - { type: ITEM, material: LEATHER_CHESTPLATE, weight: 15 }
+      - { type: ITEM, material: LEATHER_LEGGINGS,   weight: 15 }
+      - { type: ITEM, material: LEATHER_BOOTS,      weight: 15 }
+      # ---- Holiday-only entries (gated by events.<name>: true) ----
+      - { type: ITEM, material: FIREWORK_ROCKET, min-amount: 2, max-amount: 5, weight: 30, event: new_years }
+      - { type: ITEM, material: POPPY,         min-amount: 1, max-amount: 4, weight: 30, event: valentines }
+      - { type: ITEM, material: COOKIE,        min-amount: 4, max-amount: 8, weight: 30, event: christmas }
+      - { type: ITEM, material: SNOWBALL,      min-amount: 4, max-amount: 16, weight: 30, event: christmas }
+      - { type: ITEM, material: BONE,          min-amount: 3, max-amount: 6, weight: 30, event: halloween }
+      - { type: ITEM, material: PUMPKIN_SEEDS, min-amount: 2, max-amount: 6, weight: 25, event: halloween }
+
+  # ========================= UNCOMMON =======================
+  UNCOMMON:
+    color: "<green>"
+    name: "Uncommon"
+    entries:
+      # Fish / food
+      - { type: ITEM, material: PUFFERFISH,       weight: 30 }
+      - { type: ITEM, material: COOKED_COD,       min-amount: 1, max-amount: 3, weight: 25 }
+      - { type: ITEM, material: COOKED_SALMON,    min-amount: 1, max-amount: 3, weight: 25 }
+      - { type: ITEM, material: GOLDEN_CARROT,    min-amount: 1, max-amount: 3, weight: 20 }
+      - { type: ITEM, material: GLOW_BERRIES,     min-amount: 3, max-amount: 8, weight: 15 }
+      # Currency
+      - { type: TOKEN, min-amount: 1, max-amount: 50, weight: 120 }
+      - { type: XP,    min-amount: 50, max-amount: 150, weight: 25 }
+      # Resources
+      - { type: ITEM, material: IRON_INGOT,       min-amount: 2, max-amount: 6, weight: 35 }
+      - { type: ITEM, material: GOLD_INGOT,       min-amount: 2, max-amount: 5, weight: 30 }
+      - { type: ITEM, material: COPPER_INGOT,     min-amount: 4, max-amount: 12, weight: 25 }
+      - { type: ITEM, material: REDSTONE,         min-amount: 8, max-amount: 24, weight: 25 }
+      - { type: ITEM, material: LAPIS_LAZULI,     min-amount: 4, max-amount: 16, weight: 25 }
+      - { type: ITEM, material: QUARTZ,           min-amount: 4, max-amount: 16, weight: 25 }
+      - { type: ITEM, material: AMETHYST_SHARD,   min-amount: 2, max-amount: 6, weight: 20 }
+      # Building blocks
+      - { type: ITEM, material: SMOOTH_STONE,     min-amount: 8, max-amount: 32, weight: 28 }
+      - { type: ITEM, material: STONE_BRICKS,     min-amount: 8, max-amount: 32, weight: 28 }
+      - { type: ITEM, material: POLISHED_ANDESITE, min-amount: 8, max-amount: 32, weight: 22 }
+      - { type: ITEM, material: POLISHED_GRANITE,  min-amount: 8, max-amount: 32, weight: 22 }
+      - { type: ITEM, material: POLISHED_DIORITE,  min-amount: 8, max-amount: 32, weight: 22 }
+      - { type: ITEM, material: BLACKSTONE,        min-amount: 8, max-amount: 32, weight: 22 }
+      - { type: ITEM, material: BASALT,            min-amount: 8, max-amount: 32, weight: 22 }
+      - { type: ITEM, material: DEEPSLATE,         min-amount: 8, max-amount: 32, weight: 22 }
+      - { type: ITEM, material: TUFF,              min-amount: 8, max-amount: 32, weight: 18 }
+      - { type: ITEM, material: CALCITE,           min-amount: 8, max-amount: 24, weight: 18 }
+      - { type: ITEM, material: PRISMARINE,        min-amount: 4, max-amount: 16, weight: 20 }
+      - { type: ITEM, material: SEA_LANTERN,       min-amount: 2, max-amount: 6,  weight: 18 }
+      - { type: ITEM, material: GLOWSTONE,         min-amount: 4, max-amount: 12, weight: 22 }
+      - { type: ITEM, material: BOOKSHELF,         min-amount: 2, max-amount: 6,  weight: 15 }
+      - { type: ITEM, material: HOPPER,                                          weight: 12 }
+      - { type: ITEM, material: ANVIL,                                           weight: 10 }
+      # Iron gear
+      - { type: ITEM, material: IRON_SWORD,       weight: 20 }
+      - { type: ITEM, material: IRON_PICKAXE,     weight: 20 }
+      - { type: ITEM, material: IRON_AXE,         weight: 18 }
+      - { type: ITEM, material: IRON_SHOVEL,      weight: 12 }
+      - { type: ITEM, material: IRON_HOE,         weight: 8  }
+      - { type: ITEM, material: IRON_HELMET,      weight: 15 }
+      - { type: ITEM, material: IRON_CHESTPLATE,  weight: 15 }
+      - { type: ITEM, material: IRON_LEGGINGS,    weight: 15 }
+      - { type: ITEM, material: IRON_BOOTS,       weight: 15 }
+      - { type: ITEM, material: SHIELD,           weight: 14 }
+      - { type: ITEM, material: CROSSBOW,         weight: 12 }
+      # Chainmail (uncommon-tier rare drops)
+      - { type: ITEM, material: CHAINMAIL_HELMET,     weight: 8 }
+      - { type: ITEM, material: CHAINMAIL_CHESTPLATE, weight: 8 }
+      - { type: ITEM, material: CHAINMAIL_LEGGINGS,   weight: 8 }
+      - { type: ITEM, material: CHAINMAIL_BOOTS,      weight: 8 }
+      # ---- Holiday entries ----
+      - { type: ITEM, material: FIREWORK_STAR, min-amount: 1, max-amount: 3, weight: 25, event: new_years }
+      - { type: ITEM, material: RED_DYE,       min-amount: 4, max-amount: 12, weight: 20, event: valentines }
+      - { type: ITEM, material: CAKE,                                       weight: 18, event: valentines }
+      - { type: ITEM, material: RED_WOOL,      min-amount: 8, max-amount: 16, weight: 18, event: christmas }
+      - { type: ITEM, material: GREEN_WOOL,    min-amount: 8, max-amount: 16, weight: 18, event: christmas }
+      - { type: ITEM, material: SNOW_BLOCK,    min-amount: 4, max-amount: 12, weight: 18, event: christmas }
+      - { type: ITEM, material: CARVED_PUMPKIN, min-amount: 1, max-amount: 3, weight: 22, event: halloween }
+      - { type: ITEM, material: JACK_O_LANTERN, min-amount: 1, max-amount: 2, weight: 18, event: halloween }
+
+  # ========================= RARE ==========================
+  RARE:
+    color: "<aqua>"
+    name: "Rare"
+    entries:
+      # Fish / shells
+      - { type: ITEM, material: PRISMARINE_CRYSTALS, min-amount: 2, max-amount: 6, weight: 30 }
+      - { type: ITEM, material: PRISMARINE_SHARD,    min-amount: 2, max-amount: 6, weight: 30 }
+      - { type: ITEM, material: HEART_OF_THE_SEA,                                  weight: 4 }
+      # Currency
+      - { type: TOKEN, min-amount: 1, max-amount: 50, weight: 100 }
+      - { type: XP,    min-amount: 160, max-amount: 400, weight: 22 }
+      # Resources
+      - { type: COMMAND, weight: 25, commands: [ "give <player> diamond 1" ],
+          display: { material: DIAMOND, name: "<aqua>Diamond" } }
+      - { type: COMMAND, weight: 18, commands: [ "give <player> emerald 1" ],
+          display: { material: EMERALD, name: "<green>Emerald" } }
+      - { type: ITEM, material: AMETHYST_CLUSTER,   min-amount: 1, max-amount: 3, weight: 18 }
+      - { type: ITEM, material: ECHO_SHARD,                                       weight: 8 }
+      - { type: ITEM, material: NETHERITE_SCRAP,                                  weight: 5 }
+      # Building blocks (high-value)
+      - { type: ITEM, material: GOLD_BLOCK,         min-amount: 1, max-amount: 4, weight: 20 }
+      - { type: ITEM, material: IRON_BLOCK,         min-amount: 2, max-amount: 6, weight: 22 }
+      - { type: ITEM, material: LAPIS_BLOCK,        min-amount: 2, max-amount: 6, weight: 18 }
+      - { type: ITEM, material: REDSTONE_BLOCK,     min-amount: 2, max-amount: 6, weight: 18 }
+      - { type: ITEM, material: QUARTZ_BLOCK,       min-amount: 4, max-amount: 16, weight: 20 }
+      - { type: ITEM, material: AMETHYST_BLOCK,     min-amount: 2, max-amount: 6, weight: 16 }
+      - { type: ITEM, material: COPPER_BLOCK,       min-amount: 2, max-amount: 8, weight: 16 }
+      - { type: ITEM, material: HONEYCOMB_BLOCK,    min-amount: 2, max-amount: 6, weight: 12 }
+      - { type: ITEM, material: PURPUR_BLOCK,       min-amount: 4, max-amount: 16, weight: 14 }
+      - { type: ITEM, material: END_STONE,          min-amount: 4, max-amount: 16, weight: 14 }
+      - { type: ITEM, material: OBSIDIAN,           min-amount: 1, max-amount: 4, weight: 16 }
+      - { type: ITEM, material: SHULKER_BOX,                                      weight: 8 }
+      - { type: ITEM, material: SADDLE,                                           weight: 12 }
+      - { type: ITEM, material: NAME_TAG,                                         weight: 14 }
+      - { type: ITEM, material: ENDER_CHEST,                                      weight: 12 }
+      - { type: ITEM, material: EXPERIENCE_BOTTLE,  min-amount: 4, max-amount: 12, weight: 18 }
+      # Diamond gear (un-enchanted)
+      - { type: ITEM, material: DIAMOND_SWORD,      weight: 15 }
+      - { type: ITEM, material: DIAMOND_PICKAXE,    weight: 15 }
+      - { type: ITEM, material: DIAMOND_AXE,        weight: 12 }
+      - { type: ITEM, material: DIAMOND_SHOVEL,     weight: 10 }
+      - { type: ITEM, material: DIAMOND_HELMET,     weight: 14 }
+      - { type: ITEM, material: DIAMOND_CHESTPLATE, weight: 14 }
+      - { type: ITEM, material: DIAMOND_LEGGINGS,   weight: 14 }
+      - { type: ITEM, material: DIAMOND_BOOTS,      weight: 14 }
+      # Light enchanted iron
+      - { type: ITEM, material: IRON_SWORD, weight: 14,
+          enchantments: { sharpness: 2, unbreaking: 2 },
+          display: { name: "<aqua>Iron Sword <gray>(Sharp II)" } }
+      - { type: ITEM, material: IRON_PICKAXE, weight: 12,
+          enchantments: { efficiency: 3, unbreaking: 2 },
+          display: { name: "<aqua>Iron Pickaxe <gray>(Eff III)" } }
+      - { type: ITEM, material: BOW, weight: 10,
+          enchantments: { power: 2, unbreaking: 2 },
+          display: { name: "<aqua>Bow <gray>(Power II)" } }
+      # ---- Holiday entries ----
+      - { type: ITEM, material: FIREWORK_ROCKET, min-amount: 8, max-amount: 16, weight: 20, event: new_years }
+      - { type: ITEM, material: HEART_OF_THE_SEA,                              weight: 12, event: valentines }
+      - { type: ITEM, material: WITHER_ROSE,    min-amount: 1, max-amount: 2,  weight: 10, event: halloween }
+      - { type: ITEM, material: BONE_BLOCK,     min-amount: 2, max-amount: 4,  weight: 12, event: halloween }
+      - { type: ITEM, material: WHITE_CONCRETE, min-amount: 8, max-amount: 16, weight: 14, event: christmas }
+      - { type: COMMAND, weight: 10, event: christmas,
+          commands: [ "give <player> player_head 1" ],
+          display: { material: PLAYER_HEAD, name: "<red>Wrapped Gift" } }
+
+  # ========================= EPIC ==========================
+  EPIC:
+    color: "<light_purple>"
+    name: "Epic"
+    entries:
+      # Iconic
+      - { type: ITEM, material: NAUTILUS_SHELL,         min-amount: 1, max-amount: 3, weight: 22 }
+      - { type: ITEM, material: ENCHANTED_GOLDEN_APPLE,                              weight: 8 }
+      - { type: ITEM, material: GOLDEN_APPLE,           min-amount: 1, max-amount: 3, weight: 18 }
+      - { type: ITEM, material: TOTEM_OF_UNDYING,                                    weight: 5 }
+      # Currency
+      - { type: TOKEN, min-amount: 1, max-amount: 50, weight: 110 }
+      - { type: XP,    min-amount: 500, max-amount: 1200, weight: 22 }
+      # Resources
+      - { type: COMMAND, weight: 22,
+          commands: [ "give <player> netherite_scrap 1" ],
+          display: { material: NETHERITE_SCRAP, name: "<dark_purple>Netherite Scrap" } }
+      - { type: ITEM, material: ANCIENT_DEBRIS,         min-amount: 1, max-amount: 2, weight: 12 }
+      - { type: ITEM, material: NETHER_STAR_SHARD,                                    weight: 4 }
+      # Building blocks (premium)
+      - { type: ITEM, material: DIAMOND_BLOCK,          min-amount: 1, max-amount: 2, weight: 16 }
+      - { type: ITEM, material: EMERALD_BLOCK,          min-amount: 1, max-amount: 2, weight: 14 }
+      - { type: ITEM, material: OBSIDIAN,               min-amount: 8, max-amount: 16, weight: 18 }
+      - { type: ITEM, material: CRYING_OBSIDIAN,        min-amount: 2, max-amount: 6, weight: 14 }
+      - { type: ITEM, material: END_CRYSTAL,            min-amount: 1, max-amount: 2, weight: 10 }
+      - { type: ITEM, material: CONDUIT,                                              weight: 5 }
+      - { type: ITEM, material: SHULKER_BOX,            min-amount: 1, max-amount: 2, weight: 14 }
+      - { type: ITEM, material: BEACON,                                               weight: 6 }
+      - { type: ITEM, material: ELYTRA,                                               weight: 4 }
+      - { type: ITEM, material: TRIDENT,                                              weight: 6 }
+      - { type: ITEM, material: DRAGON_BREATH,          min-amount: 2, max-amount: 6, weight: 12 }
+      # Mid enchanted diamond gear
+      - { type: ITEM, material: DIAMOND_SWORD, weight: 16,
+          enchantments: { sharpness: 4, unbreaking: 3, looting: 2 },
+          display: { name: "<light_purple>Diamond Sword <gray>(Sharp IV, Loot II)" } }
+      - { type: ITEM, material: DIAMOND_PICKAXE, weight: 14,
+          enchantments: { efficiency: 4, unbreaking: 3, fortune: 2 },
+          display: { name: "<light_purple>Diamond Pickaxe <gray>(Eff IV, Fort II)" } }
+      - { type: ITEM, material: DIAMOND_AXE, weight: 12,
+          enchantments: { sharpness: 4, efficiency: 3, unbreaking: 3 },
+          display: { name: "<light_purple>Diamond Axe" } }
+      - { type: ITEM, material: BOW, weight: 12,
+          enchantments: { power: 4, unbreaking: 3, flame: 1 },
+          display: { name: "<light_purple>Flame Bow <gray>(Power IV)" } }
+      - { type: ITEM, material: CROSSBOW, weight: 10,
+          enchantments: { quick_charge: 3, unbreaking: 3, piercing: 2 },
+          display: { name: "<light_purple>Quick Crossbow" } }
+      # Mid enchanted diamond armor
+      - { type: ITEM, material: DIAMOND_HELMET, weight: 12,
+          enchantments: { protection: 3, unbreaking: 3, respiration: 2 },
+          display: { name: "<light_purple>Diamond Helmet <gray>(Prot III)" } }
+      - { type: ITEM, material: DIAMOND_CHESTPLATE, weight: 12,
+          enchantments: { protection: 3, unbreaking: 3 },
+          display: { name: "<light_purple>Diamond Chestplate <gray>(Prot III)" } }
+      - { type: ITEM, material: DIAMOND_LEGGINGS, weight: 12,
+          enchantments: { protection: 3, unbreaking: 3 },
+          display: { name: "<light_purple>Diamond Leggings <gray>(Prot III)" } }
+      - { type: ITEM, material: DIAMOND_BOOTS, weight: 12,
+          enchantments: { protection: 3, unbreaking: 3, feather_falling: 3 },
+          display: { name: "<light_purple>Diamond Boots <gray>(FF III)" } }
+      # ---- Holiday entries ----
+      - { type: ITEM, material: TNT,            min-amount: 4, max-amount: 8, weight: 10, event: new_years }
+      - { type: ITEM, material: ENCHANTED_GOLDEN_APPLE,                       weight: 8,  event: halloween }
+      - { type: ITEM, material: SHULKER_BOX,                                  weight: 10, event: christmas }
+      - { type: COMMAND, weight: 8, event: valentines,
+          commands: [ "novatoken give <player> 250" ],
+          display: { material: CAKE, name: "<light_purple><bold>Lover's Jackpot</bold></light_purple>" } }
+
+  # ========================= LEGENDARY ======================
+  LEGENDARY:
+    color: "<gold>"
+    name: "Legendary"
+    entries:
+      # Currency
+      - { type: TOKEN, min-amount: 1, max-amount: 50, weight: 110 }
+      - { type: XP,    min-amount: 2000, max-amount: 5000, weight: 18 }
+      # Resources
+      - { type: COMMAND, weight: 22,
+          commands: [ "give <player> netherite_ingot 1" ],
+          display: { material: NETHERITE_INGOT, name: "<gold>Netherite Ingot" } }
+      - { type: COMMAND, weight: 14,
+          commands: [ "give <player> netherite_ingot 2" ],
+          display: { material: NETHERITE_INGOT, name: "<gold>Netherite Ingot x2" } }
+      - { type: ITEM, material: TOTEM_OF_UNDYING,    min-amount: 1, max-amount: 2, weight: 14 }
+      - { type: ITEM, material: BEACON,                                            weight: 10 }
+      # Building blocks
+      - { type: ITEM, material: NETHERITE_BLOCK,                                   weight: 6 }
+      - { type: ITEM, material: SHULKER_BOX,         min-amount: 2, max-amount: 4, weight: 12 }
+      - { type: ITEM, material: DRAGON_HEAD,                                       weight: 4 }
+      - { type: ITEM, material: ELYTRA,                                            weight: 8 }
+      - { type: ITEM, material: HEART_OF_THE_SEA,    min-amount: 1, max-amount: 3, weight: 8 }
+      # Netherite gear (base)
+      - { type: ITEM, material: NETHERITE_SWORD,                                   weight: 14 }
+      - { type: ITEM, material: NETHERITE_PICKAXE,                                 weight: 14 }
+      - { type: ITEM, material: NETHERITE_AXE,                                     weight: 12 }
+      - { type: ITEM, material: NETHERITE_SHOVEL,                                  weight: 10 }
+      - { type: ITEM, material: NETHERITE_HELMET,                                  weight: 12 }
+      - { type: ITEM, material: NETHERITE_CHESTPLATE,                              weight: 12 }
+      - { type: ITEM, material: NETHERITE_LEGGINGS,                                weight: 12 }
+      - { type: ITEM, material: NETHERITE_BOOTS,                                   weight: 12 }
+      # Strongly enchanted netherite
+      - { type: ITEM, material: NETHERITE_SWORD, weight: 16,
+          enchantments: { sharpness: 5, unbreaking: 3, looting: 3, fire_aspect: 2, mending: 1 },
+          display: { name: "<gold>Legendary Netherite Sword <gray>(Sharp V, Loot III, Fire II)" } }
+      - { type: ITEM, material: NETHERITE_PICKAXE, weight: 14,
+          enchantments: { efficiency: 5, unbreaking: 3, fortune: 3, mending: 1 },
+          display: { name: "<gold>Legendary Netherite Pickaxe <gray>(Eff V, Fort III, Mend)" } }
+      - { type: ITEM, material: NETHERITE_AXE, weight: 12,
+          enchantments: { sharpness: 5, efficiency: 5, unbreaking: 3, mending: 1 },
+          display: { name: "<gold>Legendary Netherite Axe" } }
+      - { type: ITEM, material: BOW, weight: 12,
+          enchantments: { power: 5, unbreaking: 3, infinity: 1, flame: 1, mending: 1 },
+          display: { name: "<gold>Legendary Bow <gray>(Pow V, Flame, Inf)" } }
+      # Strongly enchanted netherite armor
+      - { type: ITEM, material: NETHERITE_HELMET, weight: 12,
+          enchantments: { protection: 4, unbreaking: 3, respiration: 3, aqua_affinity: 1, mending: 1 },
+          display: { name: "<gold>Legendary Helmet <gray>(Prot IV, Resp III, AA)" } }
+      - { type: ITEM, material: NETHERITE_CHESTPLATE, weight: 12,
+          enchantments: { protection: 4, unbreaking: 3, thorns: 2, mending: 1 },
+          display: { name: "<gold>Legendary Chestplate <gray>(Prot IV, Thorns II)" } }
+      - { type: ITEM, material: NETHERITE_LEGGINGS, weight: 12,
+          enchantments: { protection: 4, unbreaking: 3, mending: 1 },
+          display: { name: "<gold>Legendary Leggings" } }
+      - { type: ITEM, material: NETHERITE_BOOTS, weight: 12,
+          enchantments: { protection: 4, unbreaking: 3, feather_falling: 4, depth_strider: 3, soul_speed: 3, mending: 1 },
+          display: { name: "<gold>Legendary Boots <gray>(FF IV, DS III, SS III)" } }
+      - { type: ITEM, material: ELYTRA, weight: 10,
+          enchantments: { unbreaking: 3, mending: 1 },
+          display: { name: "<gold>Legendary Elytra <gray>(Unb III, Mend)" } }
+      - { type: ITEM, material: TRIDENT, weight: 10,
+          enchantments: { loyalty: 3, impaling: 5, unbreaking: 3, mending: 1 },
+          display: { name: "<gold>Legendary Trident <gray>(Loy III, Imp V)" } }
+      # ---- Holiday entries ----
+      - { type: ITEM, material: NETHER_STAR,                                  weight: 6,  event: new_years }
+      - { type: ITEM, material: WITHER_SKELETON_SKULL,                        weight: 6,  event: halloween }
+      - { type: ITEM, material: ELYTRA,                                       weight: 5,  event: christmas }
+      - { type: COMMAND, weight: 6, event: valentines,
+          commands: [ "novatoken give <player> 1000" ],
+          display: { material: HEART_OF_THE_SEA, name: "<light_purple><bold>Heart of Romance</bold></light_purple>" } }
+
+  # ========================= MYTHIC =========================
+  MYTHIC:
+    color: "<gradient:#FFD700:#FF3300>"
+    name: "Mythic"
+    entries:
+      # Currency jackpots
+      - { type: TOKEN, min-amount: 1, max-amount: 50, weight: 120 }
+      - { type: XP,    min-amount: 10000, max-amount: 20000, weight: 12 }
+      # Icon items
+      - { type: ITEM, material: NETHER_STAR,                                       weight: 10 }
+      - { type: ITEM, material: DRAGON_EGG,                                        weight: 2 }
+      - { type: ITEM, material: DRAGON_HEAD,         min-amount: 1, max-amount: 2, weight: 6 }
+      - { type: ITEM, material: BEACON,              min-amount: 2, max-amount: 4, weight: 8 }
+      - { type: ITEM, material: TOTEM_OF_UNDYING,    min-amount: 2, max-amount: 4, weight: 10 }
+      - { type: ITEM, material: NETHERITE_BLOCK,     min-amount: 1, max-amount: 3, weight: 10 }
+      - { type: ITEM, material: HEART_OF_THE_SEA,    min-amount: 4, max-amount: 8, weight: 10 }
+      # OP gear (above-vanilla enchantment levels)
+      - { type: ITEM, material: NETHERITE_SWORD, weight: 14,
+          enchantments: { sharpness: 10, sweeping_edge: 5, fire_aspect: 5, looting: 5, unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>Excalibur</bold></gradient>" } }
+      - { type: ITEM, material: NETHERITE_PICKAXE, weight: 12,
+          enchantments: { efficiency: 10, fortune: 10, unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>God Pickaxe</bold></gradient>" } }
+      - { type: ITEM, material: NETHERITE_AXE, weight: 10,
+          enchantments: { sharpness: 10, efficiency: 10, unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>God Axe</bold></gradient>" } }
+      - { type: ITEM, material: BOW, weight: 10,
+          enchantments: { power: 10, punch: 5, infinity: 1, flame: 1, unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>Apollo's Bow</bold></gradient>" } }
+      - { type: ITEM, material: CROSSBOW, weight: 10,
+          enchantments: { quick_charge: 5, piercing: 4, multishot: 1, unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>Hydra Crossbow</bold></gradient>" } }
+      - { type: ITEM, material: TRIDENT, weight: 8,
+          enchantments: { loyalty: 5, impaling: 10, channeling: 1, riptide: 3, unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>Poseidon's Wrath</bold></gradient>" } }
+      # OP armor set
+      - { type: ITEM, material: NETHERITE_HELMET, weight: 12,
+          enchantments: { protection: 10, respiration: 10, aqua_affinity: 1, unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>Crown of the Abyss</bold></gradient>" } }
+      - { type: ITEM, material: NETHERITE_CHESTPLATE, weight: 12,
+          enchantments: { protection: 10, thorns: 10, unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>Aegis</bold></gradient>" } }
+      - { type: ITEM, material: NETHERITE_LEGGINGS, weight: 12,
+          enchantments: { protection: 10, unbreaking: 10, mending: 1, swift_sneak: 5 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>Greaves of Olympus</bold></gradient>" } }
+      - { type: ITEM, material: NETHERITE_BOOTS, weight: 12,
+          enchantments: { protection: 10, feather_falling: 10, depth_strider: 3, soul_speed: 5, unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>Hermes' Boots</bold></gradient>" } }
+      - { type: ITEM, material: ELYTRA, weight: 8,
+          enchantments: { unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FFD700:#FF3300><bold>Wings of Icarus</bold></gradient>" } }
+      # Endgame containers
+      - { type: COMMAND, weight: 8,
+          commands: [ "give <player> shulker_box 4" ],
+          display: { material: SHULKER_BOX, name: "<gradient:#FFD700:#FF3300>Shulker Box x4</gradient>" } }
+      # ---- Holiday entries — extremely rare jackpots ----
+      - { type: COMMAND, weight: 4, event: new_years,
+          commands: [ "novatoken give <player> 5000", "give <player> nether_star 3" ],
+          display: { material: NETHER_STAR, name: "<gradient:#FF55FF:#FFFF55><bold>★ Midnight Jackpot ★</bold></gradient>" } }
+      - { type: COMMAND, weight: 4, event: halloween,
+          commands: [ "give <player> dragon_head 1", "novatoken give <player> 5000" ],
+          display: { material: DRAGON_HEAD, name: "<gradient:#FF8800:#000000><bold>The Reaper's Reward</bold></gradient>" } }
+      - { type: ITEM, material: ELYTRA, weight: 4, event: christmas,
+          enchantments: { unbreaking: 10, mending: 1 },
+          display: { name: "<gradient:#FF0000:#00FF00><bold>★ Santa's Wings ★</bold></gradient>" } }
+      - { type: COMMAND, weight: 4, event: valentines,
+          commands: [ "novatoken give <player> 7500" ],
+          display: { material: PINK_BANNER, name: "<gradient:#FF55FF:#FF99AA><bold>Cupid's Fortune</bold></gradient>" } }
+
+# =====================================================================
+#  Environment Jackpots — bonus roll on top of the normal catch
+# =====================================================================
+# Fires AFTER the normal tier reward is awarded. `chance` is the
+# per-catch probability of triggering the jackpot. Entries follow the
+# same Reward format as tier entries.
+# =====================================================================
+jackpots:
+
+  # ----- GLOBAL: Fisher's Jackpot -----
+  # Rolls on EVERY catch regardless of biome / rod. Keep `chance` low —
+  # this stacks on top of the env-specific pools.
+  global:
+    chance: 0.01
+    broadcast-name: "<gradient:#FFD700:#FF55FF><bold>♛ FISHER'S JACKPOT ♛</bold></gradient>"
+    entries:
+      # Bulk currency
+      - { type: TOKEN, min-amount: 100, max-amount: 500, weight: 40 }
+      - { type: MONEY, min-amount: 1000, max-amount: 5000, weight: 30 }
+      # XP injection straight into the held rod
+      - { type: XP, min-amount: 500, max-amount: 2000, weight: 25 }
+      # Useful staples
+      - { type: ITEM, material: DIAMOND,            min-amount: 4, max-amount: 12, weight: 25 }
+      - { type: ITEM, material: EMERALD,            min-amount: 8, max-amount: 24, weight: 25 }
+      - { type: ITEM, material: GOLD_INGOT,         min-amount: 8, max-amount: 24, weight: 20 }
+      - { type: ITEM, material: EXPERIENCE_BOTTLE,  min-amount: 8, max-amount: 32, weight: 20 }
+      # Rare gear
+      - { type: ITEM, material: ENCHANTED_GOLDEN_APPLE, min-amount: 1, max-amount: 3, weight: 8 }
+      - { type: ITEM, material: NETHERITE_INGOT,    min-amount: 1, max-amount: 2,  weight: 4 }
+      - { type: ITEM, material: TOTEM_OF_UNDYING,                                  weight: 2 }
+      # Mythic jackpot
+      - { type: ITEM, material: BEACON,                                            weight: 1 }
+
+  # ----- LAVA: Blaze Cache -----
+  lava:
+    chance: 0.03
+    broadcast-name: "<gradient:#FF3300:#FFAA00><bold>★ BLAZE CACHE ★</bold></gradient>"
+    entries:
+      # Nether staples
+      - { type: ITEM, material: BLAZE_ROD,       min-amount: 2, max-amount: 6,  weight: 40 }
+      - { type: ITEM, material: BLAZE_POWDER,    min-amount: 4, max-amount: 10, weight: 35 }
+      - { type: ITEM, material: MAGMA_CREAM,     min-amount: 2, max-amount: 5,  weight: 25 }
+      - { type: ITEM, material: MAGMA_BLOCK,     min-amount: 4, max-amount: 12, weight: 20 }
+      - { type: ITEM, material: GLOWSTONE_DUST,  min-amount: 4, max-amount: 12, weight: 20 }
+      # Rarer Nether loot
+      - { type: ITEM, material: GHAST_TEAR,      min-amount: 1, max-amount: 3,  weight: 15 }
+      - { type: ITEM, material: NETHERITE_SCRAP, min-amount: 1, max-amount: 2,  weight: 10 }
+      - { type: ITEM, material: ANCIENT_DEBRIS,                                  weight: 6  }
+      - { type: ITEM, material: WITHER_SKELETON_SKULL,                           weight: 3  }
+      # Bonus tokens
+      - { type: TOKEN, min-amount: 50, max-amount: 200, weight: 30 }
+      # Mythic jackpot
+      - { type: ITEM, material: NETHER_STAR, weight: 1 }
+
+  # ----- VOID: End Cache -----
+  void:
+    chance: 0.03
+    broadcast-name: "<gradient:#AA00FF:#5500AA><bold>✦ VOID CACHE ✦</bold></gradient>"
+    entries:
+      # End staples
+      - { type: ITEM, material: ENDER_PEARL,         min-amount: 2, max-amount: 6,  weight: 40 }
+      - { type: ITEM, material: ENDER_EYE,           min-amount: 1, max-amount: 3,  weight: 30 }
+      - { type: ITEM, material: CHORUS_FRUIT,        min-amount: 4, max-amount: 10, weight: 25 }
+      - { type: ITEM, material: POPPED_CHORUS_FRUIT, min-amount: 2, max-amount: 6,  weight: 20 }
+      - { type: ITEM, material: PURPUR_BLOCK,        min-amount: 8, max-amount: 24, weight: 18 }
+      - { type: ITEM, material: END_STONE,           min-amount: 8, max-amount: 24, weight: 18 }
+      # Rarer End loot
+      - { type: ITEM, material: SHULKER_SHELL,       min-amount: 1, max-amount: 2,  weight: 12 }
+      - { type: ITEM, material: DRAGON_BREATH,       min-amount: 2, max-amount: 4,  weight: 10 }
+      - { type: ITEM, material: END_CRYSTAL,         min-amount: 1, max-amount: 2,  weight: 6  }
+      - { type: ITEM, material: ELYTRA,                                              weight: 3  }
+      # Bonus tokens
+      - { type: TOKEN, min-amount: 50, max-amount: 200, weight: 30 }
+      # Mythic jackpot
+      - { type: ITEM, material: DRAGON_EGG, weight: 1 }

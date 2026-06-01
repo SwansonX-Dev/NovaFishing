@@ -1,0 +1,80 @@
+prefix: "<gradient:#FF6A00:#FFD200><bold>NovaFishing</bold></gradient> <dark_gray>»</dark_gray> "
+prefix-token: "<gradient:#FFD700:#FFAA00><bold>NovaTokens</bold></gradient> <dark_gray>»</dark_gray> "
+
+no-permission: "<red>You don't have permission for that."
+players-only: "<red>This command must be run as a player."
+player-not-found: "<red>Unknown player: <yellow><player>"
+reload-success: "<green>Reloaded all configs."
+unknown-command: "<red>Unknown subcommand. Try /<label> help."
+
+rod:
+  given: "<green>Gave a <yellow><rod></yellow> rod to <yellow><player></yellow>."
+  level-up: "<gold>Your <yellow><rod></yellow> rod leveled up to <gold><level></gold>!"
+  ability-unlocked: "<aqua>New ability unlocked: <white><ability></white>!"
+  max-level-broadcast: "<gradient:#FFD700:#FF7F00><bold>★</bold></gradient> <yellow><player></yellow> just maxed out the <gold><rod></gold> rod! <gradient:#FFD700:#FF7F00><bold>★</bold></gradient>"
+  prestige: "<gold>You prestiged <yellow><rod></yellow> to <gold><prestige></gold> stars!"
+  prestige-broadcast: "<gradient:#FFD700:#FFAA00><bold>✦</bold></gradient> <yellow><player></yellow> just <gold>prestiged</gold> their <yellow><rod></yellow> to <gold><prestige>★</gold>!"
+  prestige-fail: "<red>You can only prestige a rod that has hit max level."
+  prestige-cap: "<red>That rod is already at max prestige."
+  upgraded: "<green>You upgraded your <yellow><from></yellow> into <gold><to></gold>!"
+  upgrade-broadcast: "<gradient:#55FF55:#FFFFFF><bold>↑</bold></gradient> <yellow><player></yellow> just upgraded <gray><from></gray> → <gold><to></gold>!"
+  upgrade-fail-level: "<red>You can only upgrade a rod that has hit max level."
+  upgrade-fail-none: "<red>There's no upgrade path for that rod."
+  upgrade-fail-cost: "<red>You can't afford the upgrade. Need <yellow><amount></yellow> tokens."
+  upgrade-fail-perm: "<red>You don't have permission for the next rod tier."
+  skin-applied: "<green>Applied skin <yellow><skin></yellow> to your rod."
+  skin-cleared: "<green>Cleared the skin from your rod."
+  skin-bad: "<red>Unknown skin or you don't have access to it."
+
+fishing:
+  bite-incoming: "<yellow>You feel a tug..."
+  caught: "<green>You caught <white><item></white> <gray>(<aqua>+<xp> XP</aqua>)"
+  too-fast: "<red>Slow down! Wait a moment before reeling again."
+  bad-location: "<red>You can't lava fish here."
+  jackpot: "<jackpot> <yellow><player></yellow> <gold>just hit the jackpot!"
+
+antifish:
+  look-at-bobber: "<red>Look at your bobber when reeling."
+
+void:
+  pos1-set: "<green>Void region <yellow><name></yellow> position 1 set."
+  pos2-set: "<green>Void region <yellow><name></yellow> position 2 set."
+  region-created: "<green>Void region <yellow><name></yellow> saved!"
+  cleared: "<green>Cleared void region <yellow><name></yellow>."
+
+token:
+  balance: "<gold>You have <yellow><amount></yellow> Nova Tokens."
+  balance-other: "<gold><player></player> has <yellow><amount></yellow> Nova Tokens."
+  give: "<green>Gave <yellow><amount></yellow> Nova Tokens to <yellow><player></yellow>."
+  receive: "<gold>You received <yellow><amount></yellow> Nova Tokens!"
+  take: "<green>Took <yellow><amount></yellow> Nova Tokens from <yellow><player></yellow>."
+  set: "<green>Set <yellow><player></yellow>'s Nova Tokens to <yellow><amount></yellow>."
+  not-enough: "<red>You can't afford that. Need <yellow><amount></yellow> tokens."
+  physical-given: "<green>Gave <yellow><stack></yellow>x physical token(s) worth <yellow><amount></yellow> each to <yellow><player></yellow>."
+  physical-redeem: "<gold>Redeemed <yellow><count></yellow> token(s) for <yellow><amount></yellow> Nova Tokens!"
+
+shop:
+  purchased: "<green>Purchased <white><item></white> for <yellow><cost></yellow> tokens."
+  category-empty: "<gray>This category is empty."
+
+
+challenge:
+  completed: "<gold>Challenge complete: <yellow><name></yellow>!"
+
+word-check:
+  title: "<gold><bold>Anti-AFK Check"
+  subtitle: "<yellow>Type <white><word></white> in chat"
+  prompt: "<gold>Type <yellow><word></yellow> in chat to keep fishing."
+  blocked: "<red>You're flagged AFK — type <yellow><word></yellow> in chat to keep fishing."
+  verified: "<green>Verified! Fish on."
+
+tournament:
+  start: "<gradient:#FF6A00:#FFD200><bold>Fishing Tournament started!</bold></gradient> <gray>Duration: <yellow><minutes>m</yellow> Type: <yellow><type>"
+  cancelled: "<red>The tournament was cancelled."
+  ended: "<gradient:#FFD700:#FF7F00><bold>Tournament ended!</bold></gradient>"
+  already-running: "<red>A tournament is already running."
+  not-running: "<red>No tournament is currently running."
+
+stats:
+  header: "<gold><bold>Stats for <yellow><player></yellow></bold>"
+  line: " <gray><label>: <yellow><value></yellow>"

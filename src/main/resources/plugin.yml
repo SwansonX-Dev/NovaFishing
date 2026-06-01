@@ -1,0 +1,97 @@
+name: NovaFishing
+version: '1.0.0'
+main: dev.nova.fishing.NovaFishing
+api-version: '1.21'
+authors: [ Nova ]
+description: Premium Lava/Void Fishing with leveled rods, abilities, tiered rewards, prestige, challenges, tournaments, and Nova Token shop.
+softdepend: [ Vault, PlaceholderAPI, WorldGuard, HeadDatabase ]
+load: POSTWORLD
+
+commands:
+  novafishing:
+    description: Root command for Nova Fishing.
+    usage: /novafishing <give|reload|info|setpos1|setpos2|clearpos|rewards|top|togglelava|prestige|skin|challenges|stats|wordcheck|tournament|holo|lbhologram>
+    aliases: [ nfish, nf ]
+  novatoken:
+    description: Nova Token economy & shop.
+    usage: /novatoken <give|take|set|balance|shop|notify|broadcast|editshop|setstorelink|physical>
+    aliases: [ ntoken, ntok, tokens ]
+  fish:
+    description: Cast or reel a Nova rod (mobile / Bedrock friendly).
+    usage: /fish
+    aliases: [ cast, novafish, nfcast ]
+
+permissions:
+  novafishing.*:
+    description: Grants all Nova Fishing permissions.
+    default: op
+    children:
+      novafishing.admin: true
+      novafishing.use: true
+      novafishing.lavafish: true
+      novafishing.voidfish: true
+      novafishing.challenges: true
+      novafishing.stats: true
+      novafishing.prestige: true
+      novafishing.upgrade: true
+      novafishing.skin: true
+      novafishing.hologram: true
+      novatoken.*: true
+  novafishing.admin:
+    default: op
+    description: Admin commands & GUI editors (rewards, tournament, perms).
+  novafishing.use:
+    default: true
+    description: Use Nova Fishing rods.
+  novafishing.lavafish:
+    default: true
+    description: Allow fishing in lava anywhere.
+  novafishing.voidfish:
+    default: true
+    description: Allow fishing in configured void regions.
+  novafishing.challenges:
+    default: true
+    description: Open /novafishing challenges.
+  novafishing.stats:
+    default: true
+    description: View /novafishing stats.
+  novafishing.prestige:
+    default: true
+    description: Run /novafishing prestige on a max-level rod.
+  novafishing.upgrade:
+    default: true
+    description: Run /novafishing upgrade to advance a maxed rod to the next tier.
+  novafishing.skin:
+    default: true
+    description: Use /novafishing skin to swap rod skins.
+  novafishing.hologram:
+    default: op
+    description: Create/move/edit/delete NovaFishing holograms.
+  novafishing.broadcast.bypass:
+    default: false
+    description: Suppress max-level broadcast for this player.
+  novafishing.alert.autofish:
+    default: op
+    description: Receive anti-autofish trip notifications.
+  novafishing.antiautofish.bypass:
+    default: false
+    description: Skip all anti-autofish detection checks.
+  novafishing.wordcheck.bypass:
+    default: false
+    description: Skip the periodic word-check anti-AFK prompt.
+
+  novatoken.*:
+    default: op
+    children:
+      novatoken.admin: true
+      novatoken.use: true
+      novatoken.shop: true
+  novatoken.admin:
+    default: op
+    description: Admin token & shop editing.
+  novatoken.use:
+    default: true
+    description: Use the /novatoken balance command.
+  novatoken.shop:
+    default: true
+    description: Open the token shop.
