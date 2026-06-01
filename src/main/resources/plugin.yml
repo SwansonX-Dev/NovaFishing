@@ -14,7 +14,7 @@ commands:
     aliases: [ nfish, nf ]
   novatoken:
     description: Nova Token economy & shop.
-    usage: /novatoken <give|take|set|balance|shop|notify|broadcast|editshop|setstorelink|physical>
+    usage: /novatoken <give|take|set|balance|top|earned|rate|shop|notify|broadcast|editshop|setstorelink|physical>
     aliases: [ ntoken, ntok, tokens ]
   fish:
     description: Cast or reel a Nova rod (mobile / Bedrock friendly).

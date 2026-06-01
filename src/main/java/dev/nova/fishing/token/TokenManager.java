@@ -46,6 +46,18 @@ public final class TokenManager {
       }
    }
 
+   public synchronized void giveFromFishing(UUID uuid, long amount, boolean notify) {
+      if (amount <= 0L) {
+         return;
+      }
+      this.give(uuid, amount, notify);
+      long ts = System.currentTimeMillis();
+      this.plugin.db().runAsync(() -> {
+         this.plugin.db().addFishingTokensEarned(uuid, amount);
+         this.plugin.db().logTokenEarning(uuid, amount, ts);
+      });
+   }
+
    public synchronized boolean take(UUID uuid, long amount) {
       long current = this.get(uuid);
       if (current < amount) {

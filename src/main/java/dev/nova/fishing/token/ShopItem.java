@@ -147,7 +147,9 @@ public final class ShopItem {
          ItemStack stack = null;
          if (raw.get("item") instanceof Map<?, ?> im) {
             try {
-               if (ConfigurationSerialization.deserializeObject(im, ItemStack.class) instanceof ItemStack is) {
+               @SuppressWarnings("unchecked")
+               Map<String, Object> imTyped = (Map<String, Object>) im;
+               if (ConfigurationSerialization.deserializeObject(imTyped, ItemStack.class) instanceof ItemStack is) {
                   stack = is;
                }
             } catch (Throwable var24) {

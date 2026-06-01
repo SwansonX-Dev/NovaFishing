@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.ToIntFunction;
 
 public final class DatabaseManager {
-   public static final int CURRENT_SCHEMA = 3;
+   public static final int CURRENT_SCHEMA = 4;
    private final NovaFishing plugin;
    private Connection connection;
    private final ExecutorService writeExecutor = Executors.newSingleThreadExecutor(r -> {
@@ -74,7 +74,7 @@ public final class DatabaseManager {
       try (Statement s = this.connection.createStatement()) {
          s.executeUpdate("CREATE TABLE IF NOT EXISTS schema_version (\n  version INTEGER NOT NULL\n);");
          s.executeUpdate(
-            "CREATE TABLE IF NOT EXISTS player_data (\n  uuid TEXT PRIMARY KEY,\n  name TEXT,\n  tokens BIGINT NOT NULL DEFAULT 0,\n  total_xp BIGINT NOT NULL DEFAULT 0,\n  total_catches BIGINT NOT NULL DEFAULT 0,\n  highest_max_rod TEXT,\n  current_rod_level INTEGER NOT NULL DEFAULT 0,\n  last_seen BIGINT NOT NULL DEFAULT 0,\n  notify_token INTEGER NOT NULL DEFAULT 1\n);"
+            "CREATE TABLE IF NOT EXISTS player_data (\n  uuid TEXT PRIMARY KEY,\n  name TEXT,\n  tokens BIGINT NOT NULL DEFAULT 0,\n  total_xp BIGINT NOT NULL DEFAULT 0,\n  total_catches BIGINT NOT NULL DEFAULT 0,\n  highest_max_rod TEXT,\n  current_rod_level INTEGER NOT NULL DEFAULT 0,\n  last_seen BIGINT NOT NULL DEFAULT 0,\n  notify_token INTEGER NOT NULL DEFAULT 1,\n  fishing_tokens_earned BIGINT NOT NULL DEFAULT 0\n);"
          );
          s.executeUpdate(
             "CREATE TABLE IF NOT EXISTS broadcast_history (\n  uuid TEXT NOT NULL,\n  rod_id TEXT NOT NULL,\n  broadcast_at BIGINT NOT NULL,\n  PRIMARY KEY(uuid, rod_id)\n);"
@@ -88,16 +88,21 @@ public final class DatabaseManager {
          s.executeUpdate(
             "CREATE TABLE IF NOT EXISTS challenge_progress (\n  uuid TEXT NOT NULL,\n  challenge_id TEXT NOT NULL,\n  progress BIGINT NOT NULL DEFAULT 0,\n  completed INTEGER NOT NULL DEFAULT 0,\n  last_reset BIGINT NOT NULL DEFAULT 0,\n  PRIMARY KEY(uuid, challenge_id)\n);"
          );
+         s.executeUpdate(
+            "CREATE TABLE IF NOT EXISTS token_earnings (\n  uuid TEXT NOT NULL,\n  amount BIGINT NOT NULL,\n  ts BIGINT NOT NULL\n);"
+         );
+         s.executeUpdate("CREATE INDEX IF NOT EXISTS idx_token_earnings_ts ON token_earnings(ts);");
+         s.executeUpdate("CREATE INDEX IF NOT EXISTS idx_token_earnings_uuid_ts ON token_earnings(uuid, ts);");
       }
 
       int existing = this.readSchemaVersion();
-      if (existing < 3) {
+      if (existing < CURRENT_SCHEMA) {
          this.backup();
-         this.migrate(existing, 3);
-         this.writeSchemaVersion(3);
-         this.plugin.getLogger().info("Database migrated from schema " + existing + " to 3");
+         this.migrate(existing, CURRENT_SCHEMA);
+         this.writeSchemaVersion(CURRENT_SCHEMA);
+         this.plugin.getLogger().info("Database migrated from schema " + existing + " to " + CURRENT_SCHEMA);
       } else if (existing == 0) {
-         this.writeSchemaVersion(3);
+         this.writeSchemaVersion(CURRENT_SCHEMA);
       }
    }
 
@@ -160,6 +165,26 @@ public final class DatabaseManager {
             if (!var9.getMessage().toLowerCase().contains("duplicate column")) {
                this.plugin.getLogger().warning("migrate v3 (current_rod_level): " + var9.getMessage());
             }
+         }
+      }
+
+      if (fromVersion < 4) {
+         try (Statement sx = this.connection.createStatement()) {
+            sx.executeUpdate("ALTER TABLE player_data ADD COLUMN fishing_tokens_earned BIGINT NOT NULL DEFAULT 0");
+         } catch (SQLException var9) {
+            if (!var9.getMessage().toLowerCase().contains("duplicate column")) {
+               this.plugin.getLogger().warning("migrate v4 (fishing_tokens_earned): " + var9.getMessage());
+            }
+         }
+
+         try (Statement sx = this.connection.createStatement()) {
+            sx.executeUpdate(
+               "CREATE TABLE IF NOT EXISTS token_earnings (\n  uuid TEXT NOT NULL,\n  amount BIGINT NOT NULL,\n  ts BIGINT NOT NULL\n);"
+            );
+            sx.executeUpdate("CREATE INDEX IF NOT EXISTS idx_token_earnings_ts ON token_earnings(ts);");
+            sx.executeUpdate("CREATE INDEX IF NOT EXISTS idx_token_earnings_uuid_ts ON token_earnings(uuid, ts);");
+         } catch (SQLException var9) {
+            this.plugin.getLogger().warning("migrate v4 (token_earnings): " + var9.getMessage());
          }
       }
    }
@@ -457,6 +482,80 @@ public final class DatabaseManager {
       return out;
    }
 
+   public synchronized void addFishingTokensEarned(UUID uuid, long delta) {
+      try (PreparedStatement p = this.connection
+            .prepareStatement(
+               "INSERT INTO player_data(uuid, fishing_tokens_earned) VALUES(?,?)\nON CONFLICT(uuid) DO UPDATE SET fishing_tokens_earned = fishing_tokens_earned + excluded.fishing_tokens_earned;"
+            )) {
+         p.setString(1, uuid.toString());
+         p.setLong(2, Math.max(0L, delta));
+         p.executeUpdate();
+      } catch (SQLException ex) {
+         this.plugin.getLogger().warning("addFishingTokensEarned: " + ex.getMessage());
+      }
+   }
+
+   public synchronized long getFishingTokensEarned(UUID uuid) {
+      try (PreparedStatement p = this.connection.prepareStatement("SELECT fishing_tokens_earned FROM player_data WHERE uuid=?")) {
+         p.setString(1, uuid.toString());
+         try (ResultSet rs = p.executeQuery()) {
+            return rs.next() ? rs.getLong(1) : 0L;
+         }
+      } catch (SQLException ex) {
+         this.plugin.getLogger().warning("getFishingTokensEarned: " + ex.getMessage());
+         return 0L;
+      }
+   }
+
+   public synchronized void logTokenEarning(UUID uuid, long amount, long ts) {
+      try (PreparedStatement p = this.connection.prepareStatement("INSERT INTO token_earnings(uuid, amount, ts) VALUES(?,?,?)")) {
+         p.setString(1, uuid.toString());
+         p.setLong(2, amount);
+         p.setLong(3, ts);
+         p.executeUpdate();
+      } catch (SQLException ex) {
+         this.plugin.getLogger().warning("logTokenEarning: " + ex.getMessage());
+      }
+   }
+
+   public synchronized List<DatabaseManager.TopEarningsEntry> topByEarningsSince(long sinceTs, int limit, Set<String> excludedLowerNames) {
+      List<DatabaseManager.TopEarningsEntry> out = new ArrayList<>();
+      StringBuilder sql = new StringBuilder(
+         "SELECT pd.name, SUM(te.amount) AS earned FROM token_earnings te JOIN player_data pd ON pd.uuid = te.uuid WHERE te.ts >= ? AND pd.name IS NOT NULL"
+      );
+      appendNameExclusion(sql, excludedLowerNames);
+      sql.append(" GROUP BY te.uuid ORDER BY earned DESC LIMIT ?");
+
+      try (PreparedStatement p = this.connection.prepareStatement(sql.toString())) {
+         p.setLong(1, sinceTs);
+         int idx = bindExcludedNames(p, 2, excludedLowerNames);
+         p.setInt(idx, Math.max(1, limit));
+
+         try (ResultSet rs = p.executeQuery()) {
+            while (rs.next()) {
+               out.add(new DatabaseManager.TopEarningsEntry(rs.getString(1), rs.getLong(2)));
+            }
+         }
+      } catch (SQLException ex) {
+         this.plugin.getLogger().warning("topByEarningsSince: " + ex.getMessage());
+      }
+
+      return out;
+   }
+
+   public synchronized long getEarningsSince(UUID uuid, long sinceTs) {
+      try (PreparedStatement p = this.connection.prepareStatement("SELECT COALESCE(SUM(amount), 0) FROM token_earnings WHERE uuid=? AND ts >= ?")) {
+         p.setString(1, uuid.toString());
+         p.setLong(2, sinceTs);
+         try (ResultSet rs = p.executeQuery()) {
+            return rs.next() ? rs.getLong(1) : 0L;
+         }
+      } catch (SQLException ex) {
+         this.plugin.getLogger().warning("getEarningsSince: " + ex.getMessage());
+         return 0L;
+      }
+   }
+
    public synchronized List<DatabaseManager.TopRodEntry> topByMaxRod(int limit, ToIntFunction<String> tierIndex, Set<String> excludedLowerNames) {
       List<DatabaseManager.TopRodEntry> all = new ArrayList<>();
       StringBuilder sql = new StringBuilder(
@@ -610,5 +709,8 @@ public final class DatabaseManager {
    }
 
    public static record TopTokensEntry(String name, long tokens) {
+   }
+
+   public static record TopEarningsEntry(String name, long earned) {
    }
 }

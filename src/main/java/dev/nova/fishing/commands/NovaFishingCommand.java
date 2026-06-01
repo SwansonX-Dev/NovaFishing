@@ -660,7 +660,7 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
                      sender.sendMessage(TextUtil.mm(" <gray>- <yellow>" + n));
                   }
                   break;
-               case "add":
+               case "add": {
                   if (args.length < 3) {
                      sender.sendMessage(TextUtil.mm("<red>/" + label + " lbexclude add <player>"));
                      return;
@@ -677,8 +677,9 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
                   this.plugin.saveConfig();
                   sender.sendMessage(TextUtil.mm("<green>Excluded <yellow>" + name + " <green>from leaderboards."));
                   break;
+               }
                case "remove":
-               case "del":
+               case "del": {
                   if (args.length < 3) {
                      sender.sendMessage(TextUtil.mm("<red>/" + label + " lbexclude remove <player>"));
                      return;
@@ -694,6 +695,7 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
                   this.plugin.saveConfig();
                   sender.sendMessage(TextUtil.mm("<green>Removed <yellow>" + name + " <green>from leaderboard exclusions."));
                   break;
+               }
                case "clear":
                   if (current.isEmpty()) {
                      sender.sendMessage(TextUtil.mm("<gray>No leaderboard exclusions to clear."));
@@ -720,7 +722,7 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
       } else {
          String action = args[1].toLowerCase();
          switch (action) {
-            case "create":
+            case "create": {
                if (!(sender instanceof Player p)) {
                   sender.sendMessage(TextUtil.mm(this.plugin.configs().message("players-only")));
                   return;
@@ -746,7 +748,8 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
                   )
                );
                break;
-            case "move":
+            }
+            case "move": {
                if (!(sender instanceof Player p)) {
                   sender.sendMessage(TextUtil.mm(this.plugin.configs().message("players-only")));
                   return;
@@ -764,6 +767,7 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
 
                p.sendMessage(TextUtil.mm("<green>Moved <yellow>" + args[2] + "<green> here."));
                break;
+            }
             case "delete":
             case "remove":
                if (args.length < 3) {
@@ -778,7 +782,7 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
 
                sender.sendMessage(TextUtil.mm("<green>Deleted hologram <yellow>" + args[2]));
                break;
-            case "list":
+            case "list": {
                Collection<Hologram> all = this.plugin.holograms().all();
                if (all.isEmpty()) {
                   sender.sendMessage(TextUtil.mm("<gray>No holograms."));
@@ -806,7 +810,8 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
                   );
                }
                break;
-            case "info":
+            }
+            case "info": {
                if (args.length < 3) {
                   sender.sendMessage(TextUtil.mm("<red>/" + label + " holo info <id>"));
                   return;
@@ -828,7 +833,8 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
                   sender.sendMessage(TextUtil.mm("<gray>" + i + ": <white>" + h.lines().get(i)));
                }
                break;
-            case "setline":
+            }
+            case "setline": {
                if (args.length < 5) {
                   sender.sendMessage(TextUtil.mm("<red>/" + label + " holo setline <id> <index> <text...>"));
                   return;
@@ -850,7 +856,8 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
 
                sender.sendMessage(TextUtil.mm("<green>Set line <yellow>" + idxx + "<green> on <yellow>" + args[2]));
                break;
-            case "addline":
+            }
+            case "addline": {
                if (args.length < 4) {
                   sender.sendMessage(TextUtil.mm("<red>/" + label + " holo addline <id> <text...>"));
                   return;
@@ -864,6 +871,7 @@ public final class NovaFishingCommand implements CommandExecutor, TabCompleter {
 
                sender.sendMessage(TextUtil.mm("<green>Added a line to <yellow>" + args[2]));
                break;
+            }
             case "removeline":
             case "delline":
                if (args.length < 4) {

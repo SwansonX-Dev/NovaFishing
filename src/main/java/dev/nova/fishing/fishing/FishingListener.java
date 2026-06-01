@@ -46,7 +46,7 @@ public final class FishingListener implements Listener {
                   case FISHING:
                      this.handleCast(p, hook, rod);
                      break;
-                  case BITE:
+                  case BITE: {
                      FishingSession sxx = this.plugin.fishing().getSession(p);
                      if (sxx == null) {
                         return;
@@ -55,7 +55,8 @@ public final class FishingListener implements Listener {
                      e.setCancelled(true);
                      this.plugin.fishing().enterBitePhase(p);
                      break;
-                  case CAUGHT_FISH:
+                  }
+                  case CAUGHT_FISH: {
                      FishingSession sx = this.plugin.fishing().getSession(p);
                      if (sx == null) {
                         return;
@@ -69,7 +70,8 @@ public final class FishingListener implements Listener {
                      e.setCancelled(true);
                      this.plugin.fishing().forceCatch(p);
                      break;
-                  case REEL_IN:
+                  }
+                  case REEL_IN: {
                      FishingSession sx = this.plugin.fishing().getSession(p);
                      if (sx == null) {
                         return;
@@ -78,9 +80,10 @@ public final class FishingListener implements Listener {
                      e.setCancelled(true);
                      this.plugin.fishing().tryReel(p);
                      break;
+                  }
                   case IN_GROUND:
                   case FAILED_ATTEMPT:
-                  case CAUGHT_ENTITY:
+                  case CAUGHT_ENTITY: {
                      FishingSession s = this.plugin.fishing().getSession(p);
                      if (s == null) {
                         return;
@@ -92,6 +95,7 @@ public final class FishingListener implements Listener {
 
                      e.setExpToDrop(0);
                      e.setCancelled(true);
+                  }
                }
             }
          }

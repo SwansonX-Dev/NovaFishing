@@ -404,7 +404,7 @@ public final class RewardManager {
       Random rng = ThreadLocalRandom.current();
       int amount = reward.rollAmount(rng);
       switch (reward.type) {
-         case ITEM:
+         case ITEM: {
             Material mat = reward.material == null ? Material.COD : reward.material;
             if (this.plugin.rods().hasAbility(rod, AbilityType.AUTO_SMELT)) {
                if (mat == Material.COD) {
@@ -437,7 +437,8 @@ public final class RewardManager {
             stack = b.build();
             this.deliverItem(p, rod, stack);
             return stack;
-         case COMMAND:
+         }
+         case COMMAND: {
             for (String c : reward.commands) {
                String cmd = c.replace("<player>", p.getName());
                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
@@ -453,14 +454,16 @@ public final class RewardManager {
             }
 
             return null;
-         case MONEY:
+         }
+         case MONEY: {
             if (this.plugin.vault() != null) {
                this.plugin.vault().deposit(p, (double)amount);
             }
 
             ItemBuilder b = new ItemBuilder(Material.GOLD_NUGGET).name("<gold>$" + amount);
             return b.build();
-         case TOKEN:
+         }
+         case TOKEN: {
             int tokens = amount;
             if (this.plugin.rods().hasAbility(rod, AbilityType.WEALTH_MAGNET)) {
                tokens = amount * 2;
@@ -472,10 +475,11 @@ public final class RewardManager {
                tokens = (int)Math.round((double)tokens * 1.25);
             }
 
-            this.plugin.tokens().give(p.getUniqueId(), (long)tokens, false);
+            this.plugin.tokens().giveFromFishing(p.getUniqueId(), (long)tokens, false);
             ItemBuilder b = new ItemBuilder(Material.SUNFLOWER).name("<yellow>" + tokens + " Nova Tokens");
             return b.build();
-         case XP:
+         }
+         case XP: {
             ItemStack rodStack = rod.stack();
             if (rodStack != null) {
                this.plugin.rods().addXp(p, rodStack, (long)amount);
@@ -483,6 +487,7 @@ public final class RewardManager {
 
             ItemBuilder b = new ItemBuilder(Material.EXPERIENCE_BOTTLE).name("<aqua>+" + amount + " XP");
             return b.build();
+         }
          default:
             return null;
       }
