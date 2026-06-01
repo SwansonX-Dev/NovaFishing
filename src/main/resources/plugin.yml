@@ -1,5 +1,5 @@
 name: NovaFishing
-version: '1.0.0'
+version: '1.1.0'
 main: dev.nova.fishing.NovaFishing
 api-version: '1.21'
 authors: [ Nova ]
