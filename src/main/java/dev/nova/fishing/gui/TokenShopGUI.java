@@ -132,6 +132,96 @@ public final class TokenShopGUI {
       }
    }
 
+   public static void openConfirm(NovaFishing plugin, Player p, ShopCategory cat, int idx) {
+      if (cat == null || idx < 0 || idx >= cat.items.size()) {
+         openCategory(plugin, p, cat == null ? null : cat.id);
+         return;
+      }
+
+      ShopItem it = cat.items.get(idx);
+      TokenShopGUI.ConfirmHolder h = new TokenShopGUI.ConfirmHolder(plugin, p.getUniqueId(), cat, idx);
+      Inventory inv = Bukkit.createInventory(h, 27, TextUtil.mm("<dark_gray>Confirm Purchase"));
+      h.inv = inv;
+      Material filler = Material.matchMaterial(plugin.configs().shop().getString("ui.filler.material", "BLACK_STAINED_GLASS_PANE"));
+      if (filler == null) {
+         filler = Material.BLACK_STAINED_GLASS_PANE;
+      }
+
+      String fillerName = plugin.configs().shop().getString("ui.filler.name", " ");
+
+      for (int i = 0; i < inv.getSize(); i++) {
+         inv.setItem(i, new ItemBuilder(filler).name(fillerName).hideAll().build());
+      }
+
+      ItemStack icon = it.iconStack();
+      ItemBuilder pb = icon != null ? new ItemBuilder(icon) : new ItemBuilder(it.iconMaterial());
+      if (it.displayName != null) {
+         pb.name(it.displayName);
+      } else if (icon == null) {
+         pb.name("<white>" + it.id);
+      }
+
+      long bal = plugin.tokens().get(p.getUniqueId());
+      List<String> lore = new ArrayList<>(it.displayLore == null ? List.of() : it.displayLore);
+      lore.add("");
+      lore.add("<gold>Cost: <yellow>" + it.cost + " Tokens");
+      lore.add("<gray>Balance: <yellow>" + bal + " <gray>→ <yellow>" + Math.max(0L, bal - it.cost));
+      pb.lore(lore);
+      inv.setItem(13, pb.build());
+
+      List<String> confirmLore = new ArrayList<>();
+      confirmLore.add("<gray>Buy for <yellow>" + it.cost + " Tokens<gray>.");
+      confirmLore.add("");
+      confirmLore.add("<yellow>Click <gray>to confirm.");
+      inv.setItem(11, new ItemBuilder(Material.LIME_STAINED_GLASS_PANE).name("<green><bold>Confirm Purchase").lore(confirmLore).build());
+
+      List<String> cancelLore = new ArrayList<>();
+      cancelLore.add("<gray>Don't buy this item.");
+      cancelLore.add("");
+      cancelLore.add("<yellow>Click <gray>to go back.");
+      inv.setItem(15, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).name("<red><bold>Cancel").lore(cancelLore).build());
+
+      p.openInventory(inv);
+   }
+
+   static final class ConfirmHolder implements GUIManager.NovaHolder {
+      private final NovaFishing plugin;
+      private final UUID viewer;
+      final ShopCategory cat;
+      final int idx;
+      Inventory inv;
+
+      ConfirmHolder(NovaFishing plugin, UUID v, ShopCategory c, int idx) {
+         this.plugin = plugin;
+         this.viewer = v;
+         this.cat = c;
+         this.idx = idx;
+      }
+
+      public Inventory getInventory() {
+         return this.inv;
+      }
+
+      @Override
+      public UUID viewer() {
+         return this.viewer;
+      }
+
+      @Override
+      public void click(Player p, InventoryClickEvent e) {
+         int slot = e.getRawSlot();
+         if (slot == 11) {
+            if (this.idx >= 0 && this.idx < this.cat.items.size()) {
+               this.plugin.shop().purchase(p, this.cat.items.get(this.idx));
+            }
+
+            TokenShopGUI.openCategory(this.plugin, p, this.cat.id);
+         } else if (slot == 15) {
+            TokenShopGUI.openCategory(this.plugin, p, this.cat.id);
+         }
+      }
+   }
+
    static final class CategoryHolder implements GUIManager.NovaHolder {
       private final NovaFishing plugin;
       private final UUID viewer;
@@ -163,8 +253,12 @@ public final class TokenShopGUI {
             Integer idx = this.byIndex.get(slot);
             if (idx != null) {
                if (idx >= 0 && idx < this.cat.items.size()) {
-                  this.plugin.shop().purchase(p, this.cat.items.get(idx));
-                  TokenShopGUI.openCategory(this.plugin, p, this.cat.id);
+                  if (this.plugin.configs().shop().getBoolean("ui.confirm-purchase", true)) {
+                     TokenShopGUI.openConfirm(this.plugin, p, this.cat, idx);
+                  } else {
+                     this.plugin.shop().purchase(p, this.cat.items.get(idx));
+                     TokenShopGUI.openCategory(this.plugin, p, this.cat.id);
+                  }
                }
             }
          }
