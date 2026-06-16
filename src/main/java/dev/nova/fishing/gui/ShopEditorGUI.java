@@ -168,7 +168,6 @@ public final class ShopEditorGUI {
          p.sendMessage(TextUtil.mm("<red>Use \"Add Rod Purchase\" for Nova rods."));
       } else {
          ItemStack saved = hand.clone();
-         saved.setAmount(1);
          ShopItem item = new ShopItem(
             hand.getType().name().toLowerCase() + "_" + System.currentTimeMillis(),
             ShopItem.Type.ITEM,
@@ -191,7 +190,6 @@ public final class ShopEditorGUI {
    private static void addCursorItem(NovaFishing plugin, Player p, ShopCategory cat, ItemStack cursor) {
       if (cursor != null && cursor.getType() != Material.AIR) {
          ItemStack saved = cursor.clone();
-         saved.setAmount(1);
          ShopItem item = new ShopItem(
             cursor.getType().name().toLowerCase() + "_" + System.currentTimeMillis(),
             ShopItem.Type.ITEM,
