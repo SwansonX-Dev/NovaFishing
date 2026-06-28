@@ -15,6 +15,7 @@ import dev.nova.fishing.fishing.FishingManager;
 import dev.nova.fishing.gui.GUIManager;
 import dev.nova.fishing.hologram.HologramManager;
 import dev.nova.fishing.integration.HDBHook;
+import dev.nova.fishing.integration.NovaBlockHook;
 import dev.nova.fishing.integration.PAPIHook;
 import dev.nova.fishing.integration.VaultHook;
 import dev.nova.fishing.integration.WorldGuardHook;
@@ -65,6 +66,7 @@ public final class NovaFishing extends JavaPlugin {
    private PAPIHook papiHook;
    private WorldGuardHook worldGuardHook;
    private HDBHook hdbHook;
+   private NovaBlockHook novaBlockHook;
 
    public void onEnable() {
       instance = this;
@@ -110,6 +112,12 @@ public final class NovaFishing extends JavaPlugin {
          this.hdbHook = HDBHook.attempt(this);
       } catch (Throwable var7) {
          this.getLogger().warning("HeadDatabase skipped: " + var7.getMessage());
+      }
+
+      try {
+         this.novaBlockHook = NovaBlockHook.attempt(this);
+      } catch (Throwable var6) {
+         this.getLogger().warning("NovaBlock skipped: " + var6.getMessage());
       }
 
       this.eventManager = new EventManager(this);
@@ -319,5 +327,9 @@ public final class NovaFishing extends JavaPlugin {
 
    public HDBHook headDb() {
       return this.hdbHook;
+   }
+
+   public NovaBlockHook novaBlock() {
+      return this.novaBlockHook;
    }
 }

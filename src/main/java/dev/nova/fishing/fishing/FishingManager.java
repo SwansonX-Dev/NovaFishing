@@ -452,6 +452,10 @@ public final class FishingManager {
             this.plugin.tournament().onCatch(p, tier);
          }
 
+         if (this.plugin.novaBlock() != null) {
+            this.plugin.novaBlock().onCatch(p, tier);
+         }
+
          if (this.plugin.getConfig().getBoolean("settings.effects.catch-burst", true)) {
             ParticleEffects.catchBurst(p, s.hook.getLocation().add(0.0, 0.5, 0.0), this.plugin.rewards().tierLabel(tier), s.rod.def().particles());
          }
