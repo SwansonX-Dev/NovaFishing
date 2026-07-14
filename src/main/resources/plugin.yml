@@ -1,10 +1,10 @@
 name: NovaFishing
-version: '1.2.2'
+version: '1.3.0'
 main: dev.nova.fishing.NovaFishing
 api-version: '1.21'
 authors: [ Nova ]
 description: Premium Lava/Void Fishing with leveled rods, abilities, tiered rewards, prestige, challenges, tournaments, and Nova Token shop.
-softdepend: [ Vault, PlaceholderAPI, WorldGuard, HeadDatabase, NovaBlock ]
+softdepend: [ Vault, PlaceholderAPI, WorldGuard, HeadDatabase, NovaBlock, Nexo ]
 load: POSTWORLD
 
 commands:

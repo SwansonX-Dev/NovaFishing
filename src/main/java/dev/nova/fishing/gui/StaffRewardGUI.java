@@ -67,12 +67,15 @@ public final class StaffRewardGUI {
 
       for (int i = 0; i < list.size() && i < 45; i++) {
          Reward r = list.get(i);
-         ItemBuilder b = new ItemBuilder(r.displayMaterial != null ? r.displayMaterial : (r.material != null ? r.material : Material.PAPER));
-         b.name(r.displayName != null ? r.displayName : "<white>" + r.type.name() + " <gray>(" + (r.material != null ? r.material.name() : "—") + ")");
+         ItemBuilder b = rewardIcon(plugin, r);
          List<String> lore = new ArrayList<>();
          lore.add("<gray>Type: <yellow>" + r.type.name());
          lore.add("<gray>Weight: <yellow>" + r.weight);
          lore.add("<gray>Amount: <yellow>" + r.min + "–" + r.max);
+         if (r.nexoId != null) {
+            lore.add("<gray>Nexo item: <aqua>" + r.nexoId);
+         }
+
          if (r.type == Reward.Type.COMMAND && !r.commands.isEmpty()) {
             lore.add("<gray>Cmd: <white>" + r.commands.get(0));
          }
@@ -98,6 +101,20 @@ public final class StaffRewardGUI {
          new ItemBuilder(Material.EMERALD)
             .name("<green>Add Held Item")
             .lore(List.of("<gray>Adds the item in your main hand", "<gray>as a new ITEM reward (weight=10).", "<gray>You won't lose the held item."))
+            .build()
+      );
+      inv.setItem(
+         47,
+         new ItemBuilder(Material.CHEST)
+            .name("<green>Add Whole Inventory")
+            .lore(
+               List.of(
+                  "<gray>Adds every item in your inventory",
+                  "<gray>as separate ITEM rewards (weight=10).",
+                  "<gray>You won't lose your items.",
+                  "<gray>Nova rods are skipped."
+               )
+            )
             .build()
       );
       inv.setItem(
@@ -156,12 +173,15 @@ public final class StaffRewardGUI {
 
          for (int i = 0; i < pool.entries.size() && i < 45; i++) {
             Reward r = pool.entries.get(i);
-            ItemBuilder b = new ItemBuilder(r.displayMaterial != null ? r.displayMaterial : (r.material != null ? r.material : Material.PAPER));
-            b.name(r.displayName != null ? r.displayName : "<white>" + r.type.name() + " <gray>(" + (r.material != null ? r.material.name() : "—") + ")");
+            ItemBuilder b = rewardIcon(plugin, r);
             List<String> lore = new ArrayList<>();
             lore.add("<gray>Type: <yellow>" + r.type.name());
             lore.add("<gray>Weight: <yellow>" + r.weight);
             lore.add("<gray>Amount: <yellow>" + r.min + "–" + r.max);
+            if (r.nexoId != null) {
+               lore.add("<gray>Nexo item: <aqua>" + r.nexoId);
+            }
+
             if (r.type == Reward.Type.COMMAND && !r.commands.isEmpty()) {
                lore.add("<gray>Cmd: <white>" + r.commands.get(0));
             }
@@ -208,6 +228,20 @@ public final class StaffRewardGUI {
             new ItemBuilder(Material.COMMAND_BLOCK)
                .name("<gold>Add Command Reward")
                .lore(List.of("<gray>Click and you'll be prompted", "<gray>in chat for the command + weight."))
+               .build()
+         );
+         inv.setItem(
+            51,
+            new ItemBuilder(Material.CHEST)
+               .name("<green>Add Whole Inventory")
+               .lore(
+                  List.of(
+                     "<gray>Adds every item in your inventory",
+                     "<gray>as separate ITEM rewards (weight=10).",
+                     "<gray>You won't lose your items.",
+                     "<gray>Nova rods are skipped."
+                  )
+               )
                .build()
          );
          inv.setItem(45, new ItemBuilder(Material.ARROW).name("<gray>Back").build());
@@ -257,10 +291,44 @@ public final class StaffRewardGUI {
       }
    }
 
-   private static Reward rewardFromStack(ItemStack stack) {
+   private static Reward rewardFromStack(NovaFishing plugin, ItemStack stack) {
+      String nexoId = plugin.nexo() != null ? plugin.nexo().idOf(stack) : null;
+      if (nexoId != null) {
+         // Nexo rebuilds the full custom item on delivery, so don't snapshot the base
+         // material's meta/enchants here — the id alone keeps the reward in sync with Nexo.
+         return new Reward(
+            Reward.Type.ITEM, 10, stack.getAmount(), stack.getAmount(), stack.getType(), null, null, null, new ArrayList<>(), null, null, Collections.emptyMap(), nexoId
+         );
+      }
+
       return new Reward(
-         Reward.Type.ITEM, 10, stack.getAmount(), stack.getAmount(), stack.getType(), null, null, null, new ArrayList<>(), null, null, readEnchantments(stack)
+         Reward.Type.ITEM, 10, stack.getAmount(), stack.getAmount(), stack.getType(), null, null, null, new ArrayList<>(), null, null, readEnchantments(stack), null
       );
+   }
+
+   private static List<Reward> inventoryRewards(NovaFishing plugin, Player p) {
+      List<Reward> out = new ArrayList<>();
+
+      for (ItemStack stack : p.getInventory().getStorageContents()) {
+         if (stack != null && stack.getType() != Material.AIR && !plugin.rods().isNovaRod(stack)) {
+            out.add(rewardFromStack(plugin, stack));
+         }
+      }
+
+      return out;
+   }
+
+   private static ItemBuilder rewardIcon(NovaFishing plugin, Reward r) {
+      if (r.nexoId != null) {
+         ItemStack nx = plugin.nexo() != null ? plugin.nexo().build(r.nexoId, Math.max(1, r.min)) : null;
+         ItemBuilder b = nx != null ? new ItemBuilder(nx) : new ItemBuilder(r.material != null ? r.material : Material.PAPER);
+         b.name(r.displayName != null ? r.displayName : "<aqua>Nexo: <white>" + r.nexoId);
+         return b;
+      }
+
+      ItemBuilder b = new ItemBuilder(r.displayMaterial != null ? r.displayMaterial : (r.material != null ? r.material : Material.PAPER));
+      b.name(r.displayName != null ? r.displayName : "<white>" + r.type.name() + " <gray>(" + (r.material != null ? r.material.name() : "—") + ")");
+      return b;
    }
 
    static final class JackpotBrowser implements GUIManager.NovaHolder {
@@ -352,10 +420,22 @@ public final class StaffRewardGUI {
                   StaffRewardGUI.openJackpot(this.plugin, p, this.poolName);
                }
             });
+         } else if (slot == 51) {
+            List<Reward> toAdd = StaffRewardGUI.inventoryRewards(this.plugin, p);
+            if (toAdd.isEmpty()) {
+               p.sendMessage(TextUtil.mm("<red>No addable items found in your inventory."));
+            } else {
+               int added = this.plugin.rewards().addJackpotEntries(this.poolName, toAdd);
+               p.sendMessage(
+                  TextUtil.mm("<green>Added <yellow>" + added + "</yellow> item(s) from your inventory to <yellow>" + this.poolName)
+               );
+            }
+
+            StaffRewardGUI.openJackpot(this.plugin, p, this.poolName);
          } else if (slot == 49) {
             ItemStack cursor = e.getCursor();
             if (cursor != null && cursor.getType() != Material.AIR) {
-               this.plugin.rewards().addJackpotEntry(this.poolName, StaffRewardGUI.rewardFromStack(cursor));
+               this.plugin.rewards().addJackpotEntry(this.poolName, StaffRewardGUI.rewardFromStack(this.plugin, cursor));
                StaffRewardGUI.openJackpot(this.plugin, p, this.poolName);
             } else {
                p.sendMessage(TextUtil.mm("<red>Pick an item up onto your cursor first."));
@@ -367,7 +447,7 @@ public final class StaffRewardGUI {
             } else if (this.plugin.rods().isNovaRod(hand)) {
                p.sendMessage(TextUtil.mm("<red>Refusing to add a Nova rod as a reward."));
             } else {
-               this.plugin.rewards().addJackpotEntry(this.poolName, StaffRewardGUI.rewardFromStack(hand));
+               this.plugin.rewards().addJackpotEntry(this.poolName, StaffRewardGUI.rewardFromStack(this.plugin, hand));
                p.sendMessage(
                   TextUtil.mm("<green>Added <yellow>" + hand.getType() + "</yellow> ×<yellow>" + hand.getAmount() + "</yellow> to <yellow>" + this.poolName)
                );
@@ -424,7 +504,8 @@ public final class StaffRewardGUI {
                            r.commands,
                            r.permission,
                            r.event,
-                           r.enchantments
+                           r.enchantments,
+                           r.nexoId
                         );
                         this.plugin.rewards().updateJackpotEntry(this.poolName, idx, updated);
                         StaffRewardGUI.openJackpot(this.plugin, p, this.poolName);
@@ -500,10 +581,22 @@ public final class StaffRewardGUI {
          int slot = e.getRawSlot();
          if (slot == 45) {
             StaffRewardGUI.open(this.plugin, p);
+         } else if (slot == 47) {
+            List<Reward> toAdd = StaffRewardGUI.inventoryRewards(this.plugin, p);
+            if (toAdd.isEmpty()) {
+               p.sendMessage(TextUtil.mm("<red>No addable items found in your inventory."));
+            } else {
+               int added = this.plugin.rewards().addRewards(this.tier, toAdd);
+               p.sendMessage(
+                  TextUtil.mm("<green>Added <yellow>" + added + "</yellow> item(s) from your inventory to <yellow>" + this.tier.name())
+               );
+            }
+
+            StaffRewardGUI.openTier(this.plugin, p, this.tier);
          } else if (slot == 49) {
             ItemStack cursor = e.getCursor();
             if (cursor != null && cursor.getType() != Material.AIR) {
-               this.plugin.rewards().addReward(this.tier, StaffRewardGUI.rewardFromStack(cursor));
+               this.plugin.rewards().addReward(this.tier, StaffRewardGUI.rewardFromStack(this.plugin, cursor));
                StaffRewardGUI.openTier(this.plugin, p, this.tier);
             } else {
                p.sendMessage(TextUtil.mm("<red>Pick an item up onto your cursor first."));
@@ -515,7 +608,7 @@ public final class StaffRewardGUI {
             } else if (this.plugin.rods().isNovaRod(hand)) {
                p.sendMessage(TextUtil.mm("<red>Refusing to add a Nova rod as a reward."));
             } else {
-               this.plugin.rewards().addReward(this.tier, StaffRewardGUI.rewardFromStack(hand));
+               this.plugin.rewards().addReward(this.tier, StaffRewardGUI.rewardFromStack(this.plugin, hand));
                p.sendMessage(
                   TextUtil.mm("<green>Added <yellow>" + hand.getType() + "</yellow> ×<yellow>" + hand.getAmount() + "</yellow> to <yellow>" + this.tier.name())
                );
@@ -569,7 +662,8 @@ public final class StaffRewardGUI {
                         r.commands,
                         r.permission,
                         r.event,
-                        r.enchantments
+                        r.enchantments,
+                        r.nexoId
                      );
                      list.set(idx, updated);
                      this.plugin.rewards().save();

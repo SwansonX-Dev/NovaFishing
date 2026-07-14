@@ -28,6 +28,7 @@ public final class Reward {
    public final String permission;
    public final String event;
    public final Map<Enchantment, Integer> enchantments;
+   public final String nexoId;
 
    public Reward(
       Reward.Type type,
@@ -74,6 +75,24 @@ public final class Reward {
       String event,
       Map<Enchantment, Integer> enchantments
    ) {
+      this(type, weight, min, max, mat, displayName, displayLore, displayMaterial, commands, permission, event, enchantments, null);
+   }
+
+   public Reward(
+      Reward.Type type,
+      int weight,
+      int min,
+      int max,
+      Material mat,
+      String displayName,
+      List<String> displayLore,
+      Material displayMaterial,
+      List<String> commands,
+      String permission,
+      String event,
+      Map<Enchantment, Integer> enchantments,
+      String nexoId
+   ) {
       this.type = type;
       this.weight = weight;
       this.min = min;
@@ -86,6 +105,7 @@ public final class Reward {
       this.permission = permission;
       this.event = event;
       this.enchantments = enchantments == null ? Collections.emptyMap() : enchantments;
+      this.nexoId = nexoId;
    }
 
    public int rollAmount(Random rng) {
@@ -108,6 +128,7 @@ public final class Reward {
          int max = s.getInt("max-amount", min);
          String permission = s.getString("permission", null);
          String event = s.getString("event", null);
+         String nexoId = s.getString("nexo", null);
          Material mat = null;
          if (s.isString("material")) {
             mat = Material.matchMaterial(s.getString("material", ""));
@@ -143,7 +164,7 @@ public final class Reward {
             mat = Material.COD;
          }
 
-         return new Reward(type, weight, min, max, mat, name, lore, displayMat, commands, permission, event, enchantments);
+         return new Reward(type, weight, min, max, mat, name, lore, displayMat, commands, permission, event, enchantments, nexoId);
       }
    }
 
@@ -168,6 +189,10 @@ public final class Reward {
 
       if (this.material != null) {
          map.put("material", this.material.name());
+      }
+
+      if (this.nexoId != null) {
+         map.put("nexo", this.nexoId);
       }
 
       if (!this.commands.isEmpty()) {

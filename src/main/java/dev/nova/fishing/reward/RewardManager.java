@@ -96,6 +96,22 @@ public final class RewardManager {
       this.save();
    }
 
+   public int addRewards(RewardTier tier, Collection<Reward> rewards) {
+      List<Reward> list = this.entriesByTier.computeIfAbsent(tier, k -> new ArrayList<>());
+      int added = 0;
+
+      for (Reward r : rewards) {
+         list.add(r);
+         added++;
+      }
+
+      if (added > 0) {
+         this.save();
+      }
+
+      return added;
+   }
+
    public boolean removeReward(RewardTier tier, int index) {
       List<Reward> list = this.entriesByTier.get(tier);
       if (list != null && index >= 0 && index < list.size()) {
@@ -259,6 +275,26 @@ public final class RewardManager {
       }
    }
 
+   public int addJackpotEntries(String poolName, Collection<Reward> rewards) {
+      RewardManager.JackpotPool pool = this.getJackpot(poolName);
+      if (pool == null) {
+         return 0;
+      } else {
+         int added = 0;
+
+         for (Reward r : rewards) {
+            pool.entries.add(r);
+            added++;
+         }
+
+         if (added > 0) {
+            this.saveJackpots();
+         }
+
+         return added;
+      }
+   }
+
    public boolean removeJackpotEntry(String poolName, int index) {
       RewardManager.JackpotPool pool = this.getJackpot(poolName);
       if (pool == null) {
@@ -405,6 +441,36 @@ public final class RewardManager {
       int amount = reward.rollAmount(rng);
       switch (reward.type) {
          case ITEM: {
+            if (reward.nexoId != null && this.plugin.nexo() != null) {
+               ItemStack nexoStack = this.plugin.nexo().build(reward.nexoId, amount);
+               if (nexoStack != null) {
+                  ItemBuilder nb = new ItemBuilder(nexoStack);
+                  if (reward.displayName != null) {
+                     nb.name(reward.displayName);
+                  }
+
+                  if (reward.displayLore != null && !reward.displayLore.isEmpty()) {
+                     nb.lore(reward.displayLore);
+                  }
+
+                  if (!reward.enchantments.isEmpty()) {
+                     Map<Enchantment, Integer> capped = new HashMap<>();
+
+                     for (Entry<Enchantment, Integer> e : reward.enchantments.entrySet()) {
+                        capped.put(e.getKey(), Math.min(e.getValue(), this.maxEnchantLevel));
+                     }
+
+                     nb.enchants(capped);
+                  }
+
+                  ItemStack built = nb.build();
+                  this.deliverItem(p, rod, built);
+                  return built;
+               }
+
+               this.plugin.getLogger().warning("Nexo item '" + reward.nexoId + "' could not be built — falling back to its base material.");
+            }
+
             Material mat = reward.material == null ? Material.COD : reward.material;
             if (this.plugin.rods().hasAbility(rod, AbilityType.AUTO_SMELT)) {
                if (mat == Material.COD) {
