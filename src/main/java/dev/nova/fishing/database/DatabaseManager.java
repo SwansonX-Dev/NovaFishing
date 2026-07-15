@@ -60,13 +60,9 @@ public final class DatabaseManager {
       File dbFile = new File(folder, fileName);
 
       try {
-         Class.forName("dev.nova.fishing.libs.sqlite.JDBC");
+         Class.forName("org.sqlite.JDBC");
       } catch (ClassNotFoundException var9) {
-         try {
-            Class.forName("dev.nova.fishing.libs.sqlite.JDBC");
-         } catch (ClassNotFoundException var8) {
-            throw new SQLException("SQLite driver not found", var8);
-         }
+         throw new SQLException("SQLite driver not found", var9);
       }
 
       this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());

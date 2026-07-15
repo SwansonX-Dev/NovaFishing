@@ -6,7 +6,7 @@
 
     <groupId>dev.nova</groupId>
     <artifactId>NovaFishing</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -109,12 +109,11 @@
                         <goals><goal>shade</goal></goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.sqlite</pattern>
-                                    <shadedPattern>dev.nova.fishing.libs.sqlite</shadedPattern>
-                                </relocation>
-                            </relocations>
+                            <!-- Do NOT relocate org.sqlite. sqlite-jdbc's native library exports
+                                 JNI symbols bound to the literal name org_sqlite_core_NativeDB, so
+                                 renaming the Java classes breaks the binding and every DB open dies
+                                 with UnsatisfiedLinkError. Paper gives each plugin its own
+                                 classloader, so relocation isn't needed to avoid clashes. -->
                         </configuration>
                     </execution>
                 </executions>
