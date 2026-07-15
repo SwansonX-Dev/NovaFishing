@@ -79,9 +79,23 @@
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <resources>
+            <!-- Everything except plugin.yml is copied verbatim: the config/messages
+                 files are user-facing and must not have ${...} substituted. -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
+                <excludes>
+                    <exclude>plugin.yml</exclude>
+                </excludes>
+            </resource>
+            <!-- plugin.yml alone is filtered, so its version tracks the pom instead
+                 of being a second place to remember to bump. -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
             </resource>
         </resources>
         <plugins>
