@@ -3,6 +3,7 @@ package dev.nova.fishing.fishing;
 import dev.nova.fishing.NovaFishing;
 import dev.nova.fishing.ability.AbilityType;
 import dev.nova.fishing.particles.ParticleEffects;
+import dev.nova.fishing.api.NovaFishingCatchEvent;
 import dev.nova.fishing.reward.Reward;
 import dev.nova.fishing.reward.RewardManager;
 import dev.nova.fishing.reward.RewardTier;
@@ -455,6 +456,9 @@ public final class FishingManager {
          if (this.plugin.novaBlock() != null) {
             this.plugin.novaBlock().onCatch(p, tier);
          }
+
+         String rodId = s.rod != null && s.rod.def() != null ? s.rod.def().id() : "";
+         new NovaFishingCatchEvent(p, tier, rodId, s.lava, s.voidFishing).callEvent();
 
          if (this.plugin.getConfig().getBoolean("settings.effects.catch-burst", true)) {
             ParticleEffects.catchBurst(p, s.hook.getLocation().add(0.0, 0.5, 0.0), this.plugin.rewards().tierLabel(tier), s.rod.def().particles());
