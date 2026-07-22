@@ -123,7 +123,20 @@ public final class ShopEditorGUI {
             51, new ItemBuilder(Material.FISHING_ROD).name("<gold>Add Rod Purchase").lore(List.of("<gray>Chat-prompts for the rod id + cost.")).build()
          );
          inv.setItem(
-            53, new ItemBuilder(Material.COMMAND_BLOCK).name("<gold>Add Command Reward").lore(List.of("<gray>Chat-prompts for the command + cost.")).build()
+            53,
+            new ItemBuilder(Material.COMMAND_BLOCK)
+               .name("<gold>Add Command Reward")
+               .lore(
+                  List.of(
+                     "<gray>Chat-prompts for the command,",
+                     "<gray>display name, display item + cost.",
+                     "",
+                     "<gray>Hold the item you want as the icon",
+                     "<gray>before clicking, or type a material",
+                     "<gray>name at the prompt instead."
+                  )
+               )
+               .build()
          );
          p.openInventory(inv);
       }
@@ -259,6 +272,8 @@ public final class ShopEditorGUI {
    }
 
    private static void addCommandPurchase(NovaFishing plugin, Player p, ShopCategory cat) {
+      ItemStack hand = p.getInventory().getItemInMainHand();
+      ItemStack icon = hand != null && hand.getType() != Material.AIR ? hand.clone() : null;
       p.closeInventory();
       plugin.prompts()
          .ask(
@@ -266,39 +281,100 @@ public final class ShopEditorGUI {
             "<gold>Type the command <gray>(use <yellow><player></yellow> for the buyer's name):",
             cmd -> {
                if (cmd != null) {
-                  plugin.prompts()
-                     .ask(
-                        p,
-                        "<gold>Type the cost in Nova Tokens:",
-                        costInput -> {
-                           long cost = 100L;
-                           if (costInput != null) {
-                              try {
-                                 cost = Math.max(1L, Long.parseLong(costInput));
-                              } catch (Exception var8) {
-                              }
-                           }
-
-                           ShopItem item = new ShopItem(
-                              "cmd_" + System.currentTimeMillis(),
-                              ShopItem.Type.COMMAND,
-                              cost,
-                              null,
-                              null,
-                              new ArrayList<>(List.of(cmd)),
-                              "<yellow>" + cmd,
-                              Material.COMMAND_BLOCK,
-                              new ArrayList<>(),
-                              null
-                           );
-                           plugin.shop().addItem(cat, item);
-                           p.sendMessage(TextUtil.mm("<green>Added command reward for <yellow>" + cost + " Tokens"));
-                           openCategory(plugin, p, cat.id);
-                        }
-                     );
+                  askCommandDisplayName(plugin, p, cat, cmd, icon);
                }
             }
          );
+   }
+
+   private static void askCommandDisplayName(NovaFishing plugin, Player p, ShopCategory cat, String cmd, ItemStack icon) {
+      String skipHint = icon != null
+         ? "<gray>(or <yellow>skip</yellow> to keep the held item's own name)"
+         : "<gray>(or <yellow>skip</yellow> to show the command itself)";
+      plugin.prompts()
+         .ask(
+            p,
+            "<gold>Type the shop display name <gray>(MiniMessage allowed, e.g. <yellow><gold>Fly for 1 Hour</yellow>) " + skipHint + ":",
+            nameInput -> {
+               if (nameInput != null) {
+                  String displayName = isSkip(nameInput) ? (icon != null ? null : "<yellow>" + cmd) : nameInput;
+                  if (icon != null) {
+                     askCommandCost(plugin, p, cat, cmd, displayName, null, icon);
+                  } else {
+                     askCommandDisplayMaterial(plugin, p, cat, cmd, displayName);
+                  }
+               }
+            }
+         );
+   }
+
+   private static void askCommandDisplayMaterial(NovaFishing plugin, Player p, ShopCategory cat, String cmd, String displayName) {
+      plugin.prompts()
+         .ask(
+            p,
+            "<gold>Type the display item <gray>(a material like <yellow>DIAMOND</yellow>, or <yellow>skip</yellow> for a command block)."
+               + "<newline><gray>Tip: hold an item before clicking <yellow>Add Command Reward</yellow> to use that exact item as the icon.",
+            matInput -> {
+               if (matInput != null) {
+                  if (isSkip(matInput)) {
+                     askCommandCost(plugin, p, cat, cmd, displayName, Material.COMMAND_BLOCK, null);
+                  } else {
+                     Material mat = Material.matchMaterial(matInput.trim());
+                     if (mat != null && mat.isItem()) {
+                        askCommandCost(plugin, p, cat, cmd, displayName, mat, null);
+                     } else {
+                        p.sendMessage(TextUtil.mm("<red>Not a valid item material. Try again."));
+                        askCommandDisplayMaterial(plugin, p, cat, cmd, displayName);
+                     }
+                  }
+               }
+            }
+         );
+   }
+
+   private static void askCommandCost(
+      NovaFishing plugin, Player p, ShopCategory cat, String cmd, String displayName, Material displayMaterial, ItemStack icon
+   ) {
+      plugin.prompts()
+         .ask(
+            p,
+            "<gold>Type the cost in Nova Tokens:",
+            costInput -> {
+               if (costInput == null) {
+                  openCategory(plugin, p, cat.id);
+               } else {
+                  long cost = 100L;
+
+                  try {
+                     cost = Math.max(1L, Long.parseLong(costInput.trim()));
+                  } catch (NumberFormatException var12) {
+                  }
+
+                  ShopItem item = new ShopItem(
+                     "cmd_" + System.currentTimeMillis(),
+                     ShopItem.Type.COMMAND,
+                     cost,
+                     null,
+                     icon,
+                     null,
+                     new ArrayList<>(List.of(cmd)),
+                     displayName,
+                     displayMaterial,
+                     new ArrayList<>(),
+                     null
+                  );
+                  plugin.shop().addItem(cat, item);
+                  String label = displayName != null ? TextUtil.stripTags(displayName) : (icon != null ? icon.getType().name() : cmd);
+                  p.sendMessage(TextUtil.mm("<green>Added command reward <yellow>" + label + "</yellow> for <yellow>" + cost + " Tokens"));
+                  openCategory(plugin, p, cat.id);
+               }
+            }
+         );
+   }
+
+   private static boolean isSkip(String input) {
+      String s = input.trim();
+      return s.isEmpty() || s.equals("-") || s.equalsIgnoreCase("skip");
    }
 
    private static String sanitize(String name) {
