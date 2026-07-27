@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -192,38 +191,12 @@ public final class WordCheckManager implements Listener {
       }
    }
 
-   @EventHandler(
-      priority = EventPriority.LOWEST,
-      ignoreCancelled = false
-   )
-   public void onChatLegacy(AsyncPlayerChatEvent e) {
-      Player p = e.getPlayer();
-      String word = this.currentWord;
-      if (word != null) {
-         if (!this.verified.contains(p.getUniqueId())) {
-            String raw = e.getMessage() == null ? "" : e.getMessage().trim();
-            if (!raw.equalsIgnoreCase(word)) {
-               if (this.wasRecentlyAnswered(p.getUniqueId())) {
-                  e.setCancelled(true);
-
-                  try {
-                     e.getRecipients().clear();
-                  } catch (Throwable var6) {
-                  }
-               }
-            } else {
-               e.setCancelled(true);
-
-               try {
-                  e.getRecipients().clear();
-               } catch (Throwable var7) {
-               }
-
-               this.markVerified(p);
-            }
-         }
-      }
-   }
+   // The matching AsyncPlayerChatEvent listener was deliberately removed. Paper picks
+   // its chat pipeline server-wide from whether ANY plugin has a listener registered on
+   // the deprecated event, and the legacy pipeline renders every finished message by
+   // serialising it to a legacy section-code string and parsing it back -- which drops
+   // all hover and click events, breaking rich chat for every plugin on the server.
+   // onChatModern above fires under BOTH pipelines, so nothing is lost by dropping it.
 
    private void markVerified(Player p) {
       UUID id = p.getUniqueId();

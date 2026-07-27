@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public final class ChatPromptManager implements Listener {
@@ -68,30 +67,12 @@ public final class ChatPromptManager implements Listener {
       }
    }
 
-   @EventHandler(
-      priority = EventPriority.LOWEST,
-      ignoreCancelled = false
-   )
-   public void onChatLegacy(AsyncPlayerChatEvent e) {
-      Player p = e.getPlayer();
-      UUID id = p.getUniqueId();
-      boolean isPrompted = this.pending.containsKey(id);
-      boolean wasRecent = this.wasRecentlyHandled(id);
-      if (isPrompted || wasRecent) {
-         e.setCancelled(true);
-
-         try {
-            e.getRecipients().clear();
-         } catch (Throwable var7) {
-         }
-
-         if (isPrompted) {
-            this.recentlyHandled.put(id, System.currentTimeMillis());
-            String raw = e.getMessage() == null ? "" : e.getMessage().trim();
-            this.deliver(p, raw);
-         }
-      }
-   }
+   // The matching AsyncPlayerChatEvent listener was deliberately removed. Paper picks
+   // its chat pipeline server-wide from whether ANY plugin has a listener registered on
+   // the deprecated event, and the legacy pipeline renders every finished message by
+   // serialising it to a legacy section-code string and parsing it back -- which drops
+   // all hover and click events, breaking rich chat for every plugin on the server.
+   // onChatModern above fires under BOTH pipelines, so nothing is lost by dropping it.
 
    private boolean wasRecentlyHandled(UUID id) {
       Long ts = this.recentlyHandled.get(id);
