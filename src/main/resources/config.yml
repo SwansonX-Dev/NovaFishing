@@ -18,6 +18,14 @@ settings:
   cast-time-min-seconds: 3
   cast-time-max-seconds: 13
   catch-cooldown-ms: 750
+  # Minimum HORIZONTAL distance (blocks) between you and the bobber for a cast to
+  # count. Looking straight down drops the bobber at your own feet, which makes the
+  # anti-autofish look-cone check pass at 0 degrees forever without ever moving the
+  # mouse — that was the lava autofish exploit. Measured horizontally on purpose: a
+  # straight-down cast has ~0 horizontal travel however far the lava is below you,
+  # so a plain 3D distance check would still pass from a raised platform.
+  # A normal full-power cast travels 5-7 blocks. Set to 0 to disable.
+  min-cast-distance: 2.5
   xp-on-junk: true
 
   broadcast:
@@ -48,12 +56,25 @@ settings:
   # =====================================================================
   #  Anti-autofish — server-side autoclicker / macro detection
   # =====================================================================
-  # Four independent checks run on every catch. Any one tripping voids the
+  # Five independent checks run on every catch — including catches resolved by the
+  # Auto-Reel ability, which used to skip all of them. Any one tripping voids the
   # catch and alerts staff with the `novafishing.alert.autofish` permission.
   # Players with `novafishing.antiautofish.bypass` skip all checks.
+  #
+  # NOTE: these are only meaningful alongside `settings.min-cast-distance` above.
+  # With the bobber parked at your own feet the look-cone check is free, which is
+  # how the lava autofish exploit stayed invisible.
   anti-autofish:
     enabled: true
     staff-alert-cooldown-seconds: 30   # min seconds between alerts per player
+
+    # Run these checks on Auto-Reel catches too. Auto-Reel removes the reel click,
+    # not the player — before this it skipped every check, so an Auto-Reel rod plus
+    # an autoclicker for the recast was a fully automatic, undetectable farm.
+    # Note the practical effect: an Auto-Reel user now has to be looking roughly at
+    # their bobber when the bite lands, or the catch is voided. Set false to restore
+    # the old behaviour if that's too strict for your players.
+    check-auto-reel: true
 
     # 1) Player's view must point within this cone of the hook at catch time.
     #    Fixed autoclickers don't aim — this is the strongest single check.
@@ -63,23 +84,41 @@ settings:
 
     # 2) Stddev of recent cast intervals must EXCEED this floor. A timed macro
     #    casts at near-constant intervals, producing near-zero stddev.
+    #    OFF by default: cast intervals are dominated by our own random
+    #    cast-time-min/max-seconds wait (stddev ~2900ms at the 3-13s default),
+    #    which is ~8x this floor, so the check can never fire for anyone. Only
+    #    worth enabling if you narrow the cast-time range considerably.
     cast-jitter:
-      enabled: true
+      enabled: false
       min-stddev-ms: 350.0
 
-    # 3) Stddev of bite→reel reaction times must STAY BELOW this ceiling. A
-    #    fixed-cadence macro reels at times uncorrelated with bite onset, so its
-    #    reactions spread uniformly across the 3s bite window (~870ms stddev).
-    #    Humans cluster around their reaction time (~100ms stddev).
+    # 3) Bite→reel reaction times, bounded on BOTH sides.
+    #    max-stddev-ms — a fixed-cadence macro reels at times uncorrelated with
+    #      bite onset, so its reactions spread across the 3s window (~870ms).
+    #    min-mean-ms / min-stddev-ms — a spam autoclicker is the opposite: it
+    #      reels within one click period of every bite, far faster and far more
+    #      consistent than a human (who sits ~250-350ms with ~100ms spread).
+    #    Skipped for Auto-Reel catches, where no human reaction is involved.
     reaction:
       enabled: true
       max-stddev-ms: 700.0
+      min-mean-ms: 120.0
+      min-stddev-ms: 20.0
 
     # 4) Yaw/pitch must have changed within this window. Mouse-jiggler macros
     #    that nudge the cursor a pixel don't change in-game look angles.
     activity:
       enabled: true
       max-idle-seconds: 45
+
+    # 5) Sustained right-click rate on a Nova rod. Legit fishing needs ~2 clicks
+    #    per catch cycle; an autoclicker holds 10-20/sec. A catch is voided if a
+    #    burst over this rate happened at any point during the cast that produced
+    #    it, since the burst is usually over by the time the catch resolves.
+    click-rate:
+      enabled: true
+      max-per-second: 8.0
+      window-ms: 2000
 
   # Discord webhook (paste your URL, leave empty to disable)
   discord-webhook-url: ""

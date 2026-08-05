@@ -42,6 +42,10 @@ public final class FishingListener implements Listener {
                e.setCancelled(true);
             } else {
                FishHook hook = e.getHook();
+               if (this.plugin.antiAutofish() != null && isPlayerInitiated(e.getState())) {
+                  this.plugin.antiAutofish().onRodInteract(p);
+               }
+
                switch (e.getState()) {
                   case FISHING:
                      this.handleCast(p, hook, rod);
@@ -81,7 +85,23 @@ public final class FishingListener implements Listener {
                      this.plugin.fishing().tryReel(p);
                      break;
                   }
-                  case IN_GROUND:
+                  case IN_GROUND: {
+                     // IN_GROUND is only ever fired from FishingHook#retrieve, i.e. the player
+                     // right-clicked to reel while the bobber was stuck in a block. Cancelling it
+                     // makes retrieve() return before discard(), so the hook is ours to clean up —
+                     // if we only cancelled here the line could never be reeled in and the session
+                     // would live forever, which is what made the look-straight-down lava exploit
+                     // farmable. Treat it exactly like REEL_IN.
+                     FishingSession sx = this.plugin.fishing().getSession(p);
+                     if (sx == null) {
+                        return;
+                     }
+
+                     e.setExpToDrop(0);
+                     e.setCancelled(true);
+                     this.plugin.fishing().tryReel(p);
+                     break;
+                  }
                   case FAILED_ATTEMPT:
                   case CAUGHT_ENTITY: {
                      FishingSession s = this.plugin.fishing().getSession(p);
@@ -104,5 +124,17 @@ public final class FishingListener implements Listener {
 
    private void handleCast(Player p, FishHook hook, RodInstance rod) {
       this.plugin.fishing().beginCast(p, hook, rod);
+   }
+
+   /**
+    * States that can only be produced by the player pressing use — a cast, or one of the states
+    * FishingHook#retrieve picks between. BITE, LURED and FAILED_ATTEMPT come out of the server's own
+    * catchingFish tick, so counting them would inflate the measured click rate.
+    */
+   private static boolean isPlayerInitiated(State state) {
+      return switch (state) {
+         case FISHING, REEL_IN, IN_GROUND, CAUGHT_FISH, CAUGHT_ENTITY -> true;
+         default -> false;
+      };
    }
 }

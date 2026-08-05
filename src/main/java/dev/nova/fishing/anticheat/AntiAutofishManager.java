@@ -43,7 +43,19 @@ public final class AntiAutofishManager implements Listener {
    }
 
    public boolean allowCatch(Player p, FishingSession s) {
-      if (this.enabled() && !this.isExempt(p)) {
+      return this.allowCatch(p, s, false);
+   }
+
+   /**
+    * @param autoReel true when the Auto-Reel ability resolved the catch rather than a player click.
+    *                 The reaction detector is skipped (and not sampled) in that case, because the
+    *                 plugin reels the instant the bite lands — every sample would read ~0ms and
+    *                 poison the window for the player's manual casts.
+    */
+   public boolean allowCatch(Player p, FishingSession s, boolean autoReel) {
+      if (autoReel && !this.checkAutoReel()) {
+         return true;
+      } else if (this.enabled() && !this.isExempt(p)) {
          AntiAutofishManager.PlayerData d = this.data.computeIfAbsent(p.getUniqueId(), id -> new AntiAutofishManager.PlayerData());
          long now = System.currentTimeMillis();
          if (this.lookConeEnabled() && s.hook != null && !s.hook.isDead()) {
@@ -53,11 +65,17 @@ public final class AntiAutofishManager implements Listener {
             }
          }
 
-         long reactionMs = Math.max(0L, now - s.biteAtMs);
-         d.reactionMs.addLast(reactionMs);
+         if (this.clickRateEnabled() && d.lastHighClickRateMs >= s.startMs) {
+            return this.trip(p, d, "click-rate", String.format("%.1f clicks/sec during cast (max %.1f)", d.lastHighClickRate, this.clickRateMaxPerSecond()));
+         }
 
-         while (d.reactionMs.size() > 12) {
-            d.reactionMs.pollFirst();
+         if (!autoReel) {
+            long reactionMs = Math.max(0L, now - s.biteAtMs);
+            d.reactionMs.addLast(reactionMs);
+
+            while (d.reactionMs.size() > 12) {
+               d.reactionMs.pollFirst();
+            }
          }
 
          if (this.jitterEnabled() && d.castTimestamps.size() >= 5) {
@@ -68,10 +86,23 @@ public final class AntiAutofishManager implements Listener {
             }
          }
 
-         if (this.reactionEnabled() && d.reactionMs.size() >= 5) {
+         if (this.reactionEnabled() && !autoReel && d.reactionMs.size() >= 5) {
             double sd = stddev(d.reactionMs);
+            double mean = mean(d.reactionMs);
             if (sd > this.reactionMaxStddevMs()) {
                return this.trip(p, d, "reaction", String.format("reaction stddev %.0fms (max %.0fms)", sd, this.reactionMaxStddevMs()));
+            }
+
+            // The ceiling above only catches a fixed-cadence macro, whose reels land at random
+            // points in the bite window. A spam autoclicker is the opposite: it reels within one
+            // click period of every bite, so its reactions are both far too fast and far too
+            // consistent for a human. Both of those need their own floor.
+            if (mean < this.reactionMinMeanMs()) {
+               return this.trip(p, d, "reaction", String.format("mean reaction %.0fms (min %.0fms)", mean, this.reactionMinMeanMs()));
+            }
+
+            if (sd < this.reactionMinStddevMs()) {
+               return this.trip(p, d, "reaction", String.format("reaction stddev %.0fms (min %.0fms)", sd, this.reactionMinStddevMs()));
             }
          }
 
@@ -90,6 +121,32 @@ public final class AntiAutofishManager implements Listener {
          return true;
       } else {
          return true;
+      }
+   }
+
+   /**
+    * Called for every fishing-rod interaction (cast or reel attempt) with a Nova rod. Records the
+    * sustained right-click rate so a catch can be voided if an autoclicker was running during the
+    * cast that produced it — the click burst is usually over by the time the catch resolves, so it
+    * has to be sampled here rather than at catch time.
+    */
+   public void onRodInteract(Player p) {
+      if (this.enabled() && this.clickRateEnabled() && !this.isExempt(p)) {
+         AntiAutofishManager.PlayerData d = this.data.computeIfAbsent(p.getUniqueId(), id -> new AntiAutofishManager.PlayerData());
+         long now = System.currentTimeMillis();
+         long windowMs = this.clickRateWindowMs();
+         d.interactTimestamps.addLast(now);
+
+         while (!d.interactTimestamps.isEmpty() && now - d.interactTimestamps.peekFirst() > windowMs) {
+            d.interactTimestamps.pollFirst();
+         }
+
+         // Needs a full window of samples, otherwise a short human burst reads as a high rate.
+         double rate = (double)d.interactTimestamps.size() / ((double)windowMs / 1000.0);
+         if (d.interactTimestamps.size() >= 5 && rate > this.clickRateMaxPerSecond()) {
+            d.lastHighClickRateMs = now;
+            d.lastHighClickRate = rate;
+         }
       }
    }
 
@@ -155,6 +212,10 @@ public final class AntiAutofishManager implements Listener {
       return this.cfg().getBoolean("settings.anti-autofish.enabled", true);
    }
 
+   private boolean checkAutoReel() {
+      return this.cfg().getBoolean("settings.anti-autofish.check-auto-reel", true);
+   }
+
    private boolean lookConeEnabled() {
       return this.cfg().getBoolean("settings.anti-autofish.look-cone.enabled", true);
    }
@@ -177,6 +238,26 @@ public final class AntiAutofishManager implements Listener {
 
    private double reactionMaxStddevMs() {
       return this.cfg().getDouble("settings.anti-autofish.reaction.max-stddev-ms", 700.0);
+   }
+
+   private double reactionMinMeanMs() {
+      return this.cfg().getDouble("settings.anti-autofish.reaction.min-mean-ms", 120.0);
+   }
+
+   private double reactionMinStddevMs() {
+      return this.cfg().getDouble("settings.anti-autofish.reaction.min-stddev-ms", 20.0);
+   }
+
+   private boolean clickRateEnabled() {
+      return this.cfg().getBoolean("settings.anti-autofish.click-rate.enabled", true);
+   }
+
+   private double clickRateMaxPerSecond() {
+      return this.cfg().getDouble("settings.anti-autofish.click-rate.max-per-second", 8.0);
+   }
+
+   private long clickRateWindowMs() {
+      return Math.max(500L, this.cfg().getLong("settings.anti-autofish.click-rate.window-ms", 2000L));
    }
 
    private boolean activityEnabled() {
@@ -248,6 +329,20 @@ public final class AntiAutofishManager implements Listener {
       }
    }
 
+   private static double mean(Deque<Long> values) {
+      if (values.isEmpty()) {
+         return 0.0;
+      } else {
+         double sum = 0.0;
+
+         for (Long v : values) {
+            sum += (double)v.longValue();
+         }
+
+         return sum / (double)values.size();
+      }
+   }
+
    private static double stddev(Deque<Long> values) {
       if (values.size() < 2) {
          return Double.POSITIVE_INFINITY;
@@ -273,8 +368,11 @@ public final class AntiAutofishManager implements Listener {
    private static final class PlayerData {
       final Deque<Long> castTimestamps = new ArrayDeque<>(13);
       final Deque<Long> reactionMs = new ArrayDeque<>(13);
+      final Deque<Long> interactTimestamps = new ArrayDeque<>(64);
       long lastLookChangeMs = 0L;
       long lastStaffAlertMs = 0L;
+      long lastHighClickRateMs = 0L;
+      double lastHighClickRate = 0.0;
       int strikes = 0;
    }
 }

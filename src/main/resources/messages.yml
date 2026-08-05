@@ -31,6 +31,7 @@ fishing:
   caught: "<green>You caught <white><item></white> <gray>(<aqua>+<xp> XP</aqua>)"
   too-fast: "<red>Slow down! Wait a moment before reeling again."
   bad-location: "<red>You can't lava fish here."
+  too-close: "<red>Too close — cast out, don't drop it at your feet."
   jackpot: "<jackpot> <yellow><player></yellow> <gold>just hit the jackpot!"
 
 antifish:

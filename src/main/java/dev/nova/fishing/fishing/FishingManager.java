@@ -121,6 +121,14 @@ public final class FishingManager {
                               FishingManager.this.activeCastHooks.remove(hookId);
                               this.cancel();
                            }
+                        } else if (FishingManager.this.isPointBlank(p, hook)) {
+                           // Looking straight down drops the bobber at your own feet, which makes the
+                           // look-cone check trivially satisfiable (0 degrees off, forever, without
+                           // ever touching the mouse). Require a real cast instead.
+                           p.sendActionBar(TextUtil.mm(FishingManager.this.plugin.configs().rawMessage("fishing.too-close")));
+                           hook.remove();
+                           FishingManager.this.activeCastHooks.remove(hookId);
+                           this.cancel();
                         } else {
                            FishingManager.this.startSession(p, hook, capturedRod, inLava, inVoidRegion);
                            FishingManager.this.activeCastHooks.remove(hookId);
@@ -131,6 +139,24 @@ public final class FishingManager {
                })
                .runTaskTimer(this.plugin, 1L, 1L);
          }
+      }
+   }
+
+   /**
+    * True when the bobber settled so close to the caster that no aiming was involved. Measured
+    * horizontally on purpose: a drop-straight-down cast has near-zero horizontal travel no matter
+    * how far the lava is below, so a 3D distance check would still pass from a platform.
+    */
+   public boolean isPointBlank(Player p, FishHook hook) {
+      double min = this.plugin.getConfig().getDouble("settings.min-cast-distance", 2.5);
+      if (min <= 0.0) {
+         return false;
+      } else if (!hook.getWorld().equals(p.getWorld())) {
+         return false;
+      } else {
+         double dx = hook.getLocation().getX() - p.getLocation().getX();
+         double dz = hook.getLocation().getZ() - p.getLocation().getZ();
+         return dx * dx + dz * dz < min * min;
       }
    }
 
@@ -293,7 +319,15 @@ public final class FishingManager {
                         pl.playSound(pl.getLocation(), Sound.ITEM_BUNDLE_INSERT, 0.6F, 1.6F);
                         FishingManager.this.sendBitingBar(pl, s, this.ticks, now);
                         if (FishingManager.this.plugin.rods().hasAbility(s.rod, AbilityType.AUTO_REEL)) {
-                           FishingManager.this.resolveCatch(pl, s);
+                           // Auto-Reel removes the reel click, not the player. It must still clear
+                           // anti-autofish (minus the reaction check, which is meaningless when the
+                           // plugin does the reeling) — before this it skipped every check outright,
+                           // making an Auto-Reel rod a fully automatic farm.
+                           if (FishingManager.this.plugin.antiAutofish() == null
+                              || FishingManager.this.plugin.antiAutofish().allowCatch(pl, s, true)) {
+                              FishingManager.this.resolveCatch(pl, s);
+                           }
+
                            FishingManager.this.closeSession(s.playerId);
                            this.cancel();
                            return;
